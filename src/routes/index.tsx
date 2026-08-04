@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
+import type { Recipe } from '#/lib/types';
+
 const Home = (): React.JSX.Element => {
   const { isLoading, isError, error, data } = useQuery({
     queryKey: ['recipes'],
@@ -41,7 +43,7 @@ const Home = (): React.JSX.Element => {
           gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
         }}
       >
-        {data?.recipes.map((recipe) => (
+        {data?.recipes.map((recipe: Recipe) => (
           <li
             key={recipe.id}
             className='max-w-sm rounded-lg bg-white shadow-md overflow-hidden'
