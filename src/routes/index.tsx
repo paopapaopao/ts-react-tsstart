@@ -1,26 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-
-type Post = {
-  id: number;
-  title: string;
-  body: string;
-};
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 const Home = (): React.JSX.Element => {
   const { isLoading, isError, error, data } = useQuery({
-    queryKey: ['posts'],
+    queryKey: ['recipes'],
     queryFn: async () => {
-      const response = await fetch('https://dummyjson.com/posts?limit=0');
+      const response = await fetch(
+        'https://node-ts-fastify-production.up.railway.app/recipes',
+      );
 
-      const data: {
-        posts: Post[];
-        skip: number;
-        limit: number;
-        total: number;
-      } = await response.json();
+      const data = await response.json();
 
-      return { data: data.posts };
+      return data.data;
     },
   });
 
@@ -42,12 +33,70 @@ const Home = (): React.JSX.Element => {
   }
 
   return (
-    <main className='px-16 py-8'>
-      <ul className='flex flex-col gap-4'>
-        {data?.data.map((post: Post) => (
-          <li key={post.id}>
-            <p className='text-xl font-bold'>{post.title}</p>
-            <p>{post.body}</p>
+    <main className='px-16 py-8 flex justify-center'>
+      <ul
+        className='grid gap-x-4 gap-y-4'
+        style={{
+          width: 'clamp(600px, 50%, 1600px)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+        }}
+      >
+        {data?.recipes.map((recipe) => (
+          <li
+            key={recipe.id}
+            className='max-w-sm rounded-lg bg-white shadow-md overflow-hidden'
+          >
+            <img
+              src={recipe.image}
+              alt={recipe.name}
+              className='w-full h-48 object-cover'
+            />
+            <div className='p-4'>
+              <Link
+                to={`/recipes/$id`}
+                params={{ id: recipe.id.toString() }}
+                className='text-xl font-semibold mb-2'
+              >
+                {recipe.name}
+              </Link>
+              <dl className='grid grid-cols-1 gap-1 text-sm'>
+                {recipe.prepTime !== undefined && (
+                  <div className='flex justify-between'>
+                    <dt className='font-medium'>Prep Time</dt>
+                    <dd>{recipe.prepTime} min</dd>
+                  </div>
+                )}
+                {recipe.cookTime !== undefined && (
+                  <div className='flex justify-between'>
+                    <dt className='font-medium'>Cook Time</dt>
+                    <dd>{recipe.cookTime} min</dd>
+                  </div>
+                )}
+                {recipe.servings !== undefined && (
+                  <div className='flex justify-between'>
+                    <dt className='font-medium'>Servings</dt>
+                    <dd>{recipe.servings}</dd>
+                  </div>
+                )}
+                {recipe.difficulty && (
+                  <div className='flex justify-between'>
+                    <dt className='font-medium'>Difficulty</dt>
+                    <dd>{recipe.difficulty}</dd>
+                  </div>
+                )}
+                {recipe.calories !== undefined && (
+                  <div className='flex justify-between'>
+                    <dt className='font-medium'>Calories/Serv.</dt>
+                    <dd>{recipe.calories}</dd>
+                  </div>
+                )}
+              </dl>
+              {recipe.tags?.length && (
+                <p className='mt-2 text-sm text-gray-600'>
+                  Tags: {recipe.tags.join(', ')}
+                </p>
+              )}
+            </div>
           </li>
         ))}
       </ul>
