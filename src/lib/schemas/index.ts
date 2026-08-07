@@ -9,7 +9,7 @@ import {
   string,
 } from 'valibot';
 
-import { DIFFICULTIES } from '#/constants';
+import { DIFFICULTIES } from '#/lib/constants';
 
 export const recipeFormSchema = object({
   image: string(),
