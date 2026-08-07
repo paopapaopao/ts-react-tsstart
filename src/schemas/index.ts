@@ -9,6 +9,8 @@ import {
   string,
 } from 'valibot';
 
+import { DIFFICULTIES } from '#/constants';
+
 export const recipeFormSchema = object({
   image: string(),
   name: pipe(string(), nonEmpty('Name is required')),
@@ -22,7 +24,7 @@ export const recipeFormSchema = object({
 
   prepTime: number(),
   cookTime: number(),
-  difficulty: picklist(['Easy', 'Medium', 'Hard']),
+  difficulty: picklist(DIFFICULTIES),
   servings: number(),
   calories: number(),
   cuisine: string(),
