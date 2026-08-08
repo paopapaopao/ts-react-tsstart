@@ -54,18 +54,15 @@ export const RecipeForm = () => {
 
   const { mutate } = useMutation({
     mutationFn: async (payload: RecipeFormSchema) => {
+      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
+        payload;
+
       const response = await fetch(
         'https://node-ts-fastify-production.up.railway.app/recipes',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...payload,
-            ingredients: [payload.ingredients],
-            instructions: [payload.instructions],
-            tags: [payload.tags],
-            mealType: [payload.mealType],
-          }),
+          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
         },
       );
 
