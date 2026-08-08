@@ -1,3 +1,9 @@
+import type { InferOutput } from 'valibot';
+
+import { recipeFormSchema } from '../schemas';
+
+export type RecipeFormSchema = InferOutput<typeof recipeFormSchema>;
+
 export type Recipe = {
   id: number;
   image: string;

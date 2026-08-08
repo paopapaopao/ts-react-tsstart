@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 
 import type { Recipe } from '#/lib/types';
+
+import { Button } from '#/components/ui';
 
 const Home = (): React.JSX.Element => {
   const { isLoading, isError, error, data } = useQuery({
@@ -16,6 +18,8 @@ const Home = (): React.JSX.Element => {
       return data.data;
     },
   });
+
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -35,7 +39,14 @@ const Home = (): React.JSX.Element => {
   }
 
   return (
-    <main className='px-16 py-8 flex justify-center'>
+    <main className='px-16 py-8 flex flex-col items-center gap-8'>
+      <Button
+        onClick={() => {
+          navigate({ to: '/recipes/form' });
+        }}
+      >
+        Add Recipe
+      </Button>
       <ul
         className='grid gap-x-4 gap-y-4'
         style={{
