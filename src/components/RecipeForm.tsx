@@ -335,7 +335,7 @@ export const RecipeForm = () => {
         )}
       </FormField>
 
-      <FieldSeparator />
+      <FieldSeparator className='py-8' />
 
       <FormField name='prepTime'>
         {({ state, handleChange }) => (
@@ -573,7 +573,12 @@ export const RecipeForm = () => {
         )}
       </FormField>
 
-      <Button type='submit'>Create Recipe</Button>
+      <Button
+        type='submit'
+        className='mbs-8'
+      >
+        Create Recipe
+      </Button>
     </form>
   );
 };
