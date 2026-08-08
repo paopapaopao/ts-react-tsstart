@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 
 import type { Recipe } from '#/lib/types';
-import { Button } from '#/components/ui/button';
+
+import { Button } from '#/components/ui';
 
 const Home = (): React.JSX.Element => {
   const { isLoading, isError, error, data } = useQuery({

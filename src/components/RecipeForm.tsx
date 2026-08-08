@@ -5,18 +5,25 @@ import { useState } from 'react';
 import { DIFFICULTIES, MEAL_TYPES } from '#/lib/constants';
 import { recipeFormSchema } from '#/lib/schemas';
 import type { RecipeFormSchema } from '#/lib/types';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Card, CardAction, CardHeader, CardTitle } from './ui/card';
+
 import {
+  Badge,
+  Button,
+  Card,
+  CardAction,
+  CardHeader,
+  CardTitle,
   Combobox,
   ComboboxContent,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from './ui/combobox';
-import { Field, FieldError, FieldLabel, FieldSeparator } from './ui/field';
-import { Input } from './ui/input';
+  Field,
+  FieldError,
+  FieldLabel,
+  FieldSeparator,
+  Input,
+} from './ui';
 
 const defaultValues = {
   image: '',
