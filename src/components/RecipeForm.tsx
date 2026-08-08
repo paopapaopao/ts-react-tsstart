@@ -200,6 +200,7 @@ export const RecipeForm = () => {
               id='name'
               placeholder='Enter name'
               type='text'
+              aria-invalid={!state.meta.isValid}
               value={state.value}
               onChange={(event) => {
                 handleChange(event.target.value);
@@ -213,129 +214,119 @@ export const RecipeForm = () => {
       </FormField>
 
       <FormField name='ingredient'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='ingredient'>Ingredients</FieldLabel>
-            <Input
-              id='ingredient'
-              placeholder='Enter ingredients'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-              onKeyDown={handleKeyDown('ingredient', 'ingredients')}
-            />
-            <FormField name='ingredients'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
-                    <ul className='flex flex-col gap-2'>
-                      {state.value.map((ingredient, index) => (
-                        <Card
-                          className='py-0'
-                          key={`${index}-${ingredient}`}
-                        >
-                          <CardHeader className='flex items-center'>
-                            <CardTitle className='flex-1'>
-                              {ingredient}
-                            </CardTitle>
-                            <CardAction>
-                              <Button
-                                variant='link'
-                                onClick={handleRemoveClick(
-                                  'ingredients',
-                                  index,
-                                )}
-                              >
-                                X
-                              </Button>
-                            </CardAction>
-                          </CardHeader>
-                        </Card>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
-                  </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+        {({ state: ingredientState, handleChange }) => (
+          <FormField name='ingredients'>
+            {({ state: ingredientsState }) => (
+              <Field>
+                <FieldLabel htmlFor='ingredient'>Ingredients</FieldLabel>
+                <Input
+                  id='ingredient'
+                  placeholder='Enter ingredients'
+                  type='text'
+                  aria-invalid={!ingredientsState.meta.isValid}
+                  value={ingredientState.value}
+                  onChange={(event) => {
+                    handleChange(event.target.value);
+                  }}
+                  onKeyDown={handleKeyDown('ingredient', 'ingredients')}
+                />
+                {ingredientsState.value.length > 0 && (
+                  <ul className='flex flex-col gap-2'>
+                    {ingredientsState.value.map((ingredient, index) => (
+                      <Card
+                        className='py-0'
+                        key={`${index}-${ingredient}`}
+                      >
+                        <CardHeader className='flex items-center'>
+                          <CardTitle className='flex-1'>{ingredient}</CardTitle>
+                          <CardAction>
+                            <Button
+                              variant='link'
+                              onClick={handleRemoveClick('ingredients', index)}
+                            >
+                              X
+                            </Button>
+                          </CardAction>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  </ul>
+                )}
+                <FieldError>
+                  {ingredientsState.meta.errors
+                    .map((error) => error?.message)
+                    .join(', ')}
+                </FieldError>
+              </Field>
+            )}
+          </FormField>
         )}
       </FormField>
 
       <FormField name='instruction'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='instruction'>Instructions</FieldLabel>
-            <Input
-              id='instruction'
-              placeholder='Enter instructions'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-              onKeyDown={(event) => {
-                if (event.key !== 'Enter') return;
+        {({ state: instructionState, handleChange }) => (
+          <FormField name='instructions'>
+            {({ state: instructionsState }) => (
+              <Field>
+                <FieldLabel htmlFor='instruction'>Instructions</FieldLabel>
+                <Input
+                  id='instruction'
+                  placeholder='Enter instructions'
+                  type='text'
+                  aria-invalid={!instructionsState.meta.isValid}
+                  value={instructionState.value}
+                  onChange={(event) => {
+                    handleChange(event.target.value);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== 'Enter') return;
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                const instruction = state.value.trim();
+                    const instruction = instructionState.value.trim();
 
-                if (instruction === '') return;
+                    if (instruction === '') return;
 
-                setFieldValue('instructions', (prevValues) => [
-                  ...prevValues,
-                  instruction,
-                ]);
+                    setFieldValue('instructions', (prevValues) => [
+                      ...prevValues,
+                      instruction,
+                    ]);
 
-                setFieldValue('instruction', '');
-              }}
-            />
-            <FormField name='instructions'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
-                    <ul className='flex flex-col gap-2'>
-                      {state.value.map((instruction, index) => (
-                        <Card
-                          className='py-0'
-                          key={`${index}-${instruction}`}
-                        >
-                          <CardHeader className='flex items-center'>
-                            <CardTitle className='flex-1'>
-                              {instruction}
-                            </CardTitle>
-                            <CardAction>
-                              <Button
-                                variant='link'
-                                onClick={handleRemoveClick(
-                                  'instructions',
-                                  index,
-                                )}
-                              >
-                                X
-                              </Button>
-                            </CardAction>
-                          </CardHeader>
-                        </Card>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
-                  </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+                    setFieldValue('instruction', '');
+                  }}
+                />
+                {instructionsState.value.length > 0 && (
+                  <ul className='flex flex-col gap-2'>
+                    {instructionsState.value.map((instruction, index) => (
+                      <Card
+                        className='py-0'
+                        key={`${index}-${instruction}`}
+                      >
+                        <CardHeader className='flex items-center'>
+                          <CardTitle className='flex-1'>
+                            {instruction}
+                          </CardTitle>
+                          <CardAction>
+                            <Button
+                              variant='link'
+                              onClick={handleRemoveClick('instructions', index)}
+                            >
+                              X
+                            </Button>
+                          </CardAction>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  </ul>
+                )}
+                <FieldError>
+                  {instructionsState.meta.errors
+                    .map((error) => error?.message)
+                    .join(', ')}
+                </FieldError>
+              </Field>
+            )}
+          </FormField>
         )}
       </FormField>
 
@@ -349,6 +340,7 @@ export const RecipeForm = () => {
               id='prepTime'
               placeholder='Enter preparation time (minutes)'
               type='number'
+              aria-invalid={!state.meta.isValid}
               value={state.value}
               onChange={(event) => {
                 handleChange(Number(event.target.value));
@@ -369,6 +361,7 @@ export const RecipeForm = () => {
               id='cookTime'
               placeholder='Enter cook time (minutes)'
               type='number'
+              aria-invalid={!state.meta.isValid}
               value={state.value}
               onChange={(event) => {
                 handleChange(Number(event.target.value));
@@ -393,7 +386,10 @@ export const RecipeForm = () => {
                 handleChange(value as RecipeFormSchema['difficulty']);
               }}
             >
-              <ComboboxInput placeholder='Select difficulty' />
+              <ComboboxInput
+                placeholder='Select difficulty'
+                aria-invalid={!state.meta.isValid}
+              />
               <ComboboxContent>
                 <ComboboxList>
                   {(difficulty) => (
@@ -422,6 +418,7 @@ export const RecipeForm = () => {
               id='servings'
               placeholder='Enter servings'
               type='number'
+              aria-invalid={!state.meta.isValid}
               value={state.value}
               onChange={(event) => {
                 handleChange(Number(event.target.value));
@@ -442,6 +439,7 @@ export const RecipeForm = () => {
               id='calories'
               placeholder='Enter calories'
               type='number'
+              aria-invalid={!state.meta.isValid}
               value={state.value}
               onChange={(event) => {
                 handleChange(Number(event.target.value));
@@ -462,6 +460,7 @@ export const RecipeForm = () => {
               id='cuisine'
               placeholder='Enter cuisine'
               type='text'
+              aria-invalid={!state.meta.isValid}
               value={state.value}
               onChange={(event) => {
                 handleChange(event.target.value);
@@ -475,105 +474,105 @@ export const RecipeForm = () => {
       </FormField>
 
       <FormField name='tag'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='tag'>Tags</FieldLabel>
-            <Input
-              id='tag'
-              placeholder='Enter tags'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-              onKeyDown={handleKeyDown('tag', 'tags')}
-            />
-            <FormField name='tags'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
-                    <ul className='flex flex-wrap gap-2'>
-                      {state.value.map((tag, index) => (
-                        <Badge className='px-4 py-4'>
-                          {tag}
-                          <span onClick={handleRemoveClick('tags', index)}>
-                            X
-                          </span>
-                        </Badge>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
-                  </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+        {({ state: tagState, handleChange }) => (
+          <FormField name='tags'>
+            {({ state: tagsState }) => (
+              <Field>
+                <FieldLabel htmlFor='tag'>Tags</FieldLabel>
+                <Input
+                  id='tag'
+                  placeholder='Enter tags'
+                  type='text'
+                  aria-invalid={!tagsState.meta.isValid}
+                  value={tagState.value}
+                  onChange={(event) => {
+                    handleChange(event.target.value);
+                  }}
+                  onKeyDown={handleKeyDown('tag', 'tags')}
+                />
+                {tagsState.value.length > 0 && (
+                  <ul className='flex flex-wrap gap-2'>
+                    {tagsState.value.map((tag, index) => (
+                      <Badge className='px-4 py-4'>
+                        {tag}
+                        <span onClick={handleRemoveClick('tags', index)}>
+                          X
+                        </span>
+                      </Badge>
+                    ))}
+                  </ul>
+                )}
+                <FieldError>
+                  {tagsState.meta.errors
+                    .map((error) => error?.message)
+                    .join(', ')}
+                </FieldError>
+              </Field>
+            )}
+          </FormField>
         )}
       </FormField>
 
       <FormField name='mealType'>
-        {({ state }) => (
-          <Field>
-            <FieldLabel htmlFor='mealType'>Meal Types</FieldLabel>
-            <Combobox
-              id='mealType'
-              items={MEAL_TYPES}
-              value={state.value}
-              onValueChange={(value) => {
-                if (value === null) return;
+        {({ state: mealTypeState }) => (
+          <FormField name='mealTypes'>
+            {({ state: mealTypesState }) => (
+              <Field>
+                <FieldLabel htmlFor='mealType'>Meal Types</FieldLabel>
+                <Combobox
+                  id='mealType'
+                  items={MEAL_TYPES}
+                  value={mealTypeState.value}
+                  onValueChange={(value) => {
+                    if (value === null) return;
 
-                if (formState.values.mealTypes.includes(value)) return;
+                    if (formState.values.mealTypes.includes(value)) return;
 
-                setFieldValue('mealTypes', (prevValues) => [
-                  ...prevValues,
-                  value,
-                ]);
+                    setFieldValue('mealTypes', (prevValues) => [
+                      ...prevValues,
+                      value,
+                    ]);
 
-                setFieldValue('mealType', '');
-              }}
-            >
-              <ComboboxInput placeholder='Select meal types' />
-              <ComboboxContent>
-                <ComboboxList>
-                  {(mealType) => (
-                    <ComboboxItem
-                      key={mealType}
-                      value={mealType}
-                    >
-                      {mealType}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
-            <FormField name='mealTypes'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
-                    <ul className='flex flex-wrap gap-2'>
-                      {state.value.map((mealType, index) => (
-                        <Badge className='px-4 py-4'>
+                    setFieldValue('mealType', '');
+                  }}
+                >
+                  <ComboboxInput
+                    placeholder='Select meal types'
+                    aria-invalid={!mealTypesState.meta.isValid}
+                  />
+                  <ComboboxContent>
+                    <ComboboxList>
+                      {(mealType) => (
+                        <ComboboxItem
+                          key={mealType}
+                          value={mealType}
+                        >
                           {mealType}
-                          <span onClick={handleRemoveClick('mealTypes', index)}>
-                            X
-                          </span>
-                        </Badge>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
-                  </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+                {mealTypesState.value.length > 0 && (
+                  <ul className='flex flex-wrap gap-2'>
+                    {mealTypesState.value.map((mealType, index) => (
+                      <Badge className='px-4 py-4'>
+                        {mealType}
+                        <span onClick={handleRemoveClick('mealTypes', index)}>
+                          X
+                        </span>
+                      </Badge>
+                    ))}
+                  </ul>
+                )}
+                <FieldError>
+                  {mealTypesState.meta.errors
+                    .map((error) => error?.message)
+                    .join(', ')}
+                </FieldError>
+              </Field>
+            )}
+          </FormField>
         )}
       </FormField>
 
