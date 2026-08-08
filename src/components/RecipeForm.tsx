@@ -95,16 +95,15 @@ export const RecipeForm = () => {
   });
 
   const handleKeyDown = (
-    input: string,
-    inputField: 'ingredient' | 'instruction' | 'tag' | 'mealType',
-    arrayField: 'ingredients' | 'instructions' | 'tags' | 'mealTypes',
+    inputField: 'ingredient' | 'instruction' | 'tag',
+    arrayField: 'ingredients' | 'instructions' | 'tags',
   ) => {
     return (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key !== 'Enter') return;
 
       event.preventDefault();
 
-      const value = input.trim();
+      const value = event.currentTarget.value.trim();
 
       if (value === '') return;
 
@@ -142,6 +141,20 @@ export const RecipeForm = () => {
         event.preventDefault();
 
         handleSubmit();
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== 'Enter') return;
+
+        const target = event.target as HTMLElement;
+
+        if (
+          target instanceof HTMLInputElement &&
+          ['ingredient', 'instruction', 'tag'].includes(target.id)
+        ) {
+          return;
+        }
+
+        event.preventDefault();
       }}
       className='flex flex-col gap-4'
     >
@@ -207,11 +220,7 @@ export const RecipeForm = () => {
               onChange={(event) => {
                 handleChange(event.target.value);
               }}
-              onKeyDown={handleKeyDown(
-                state.value,
-                'ingredient',
-                'ingredients',
-              )}
+              onKeyDown={handleKeyDown('ingredient', 'ingredients')}
             />
             <FormField name='ingredients'>
               {({ state }) => (
@@ -473,7 +482,7 @@ export const RecipeForm = () => {
               onChange={(event) => {
                 handleChange(event.target.value);
               }}
-              onKeyDown={handleKeyDown(state.value, 'tag', 'tags')}
+              onKeyDown={handleKeyDown('tag', 'tags')}
             />
             <FormField name='tags'>
               {({ state }) => (
