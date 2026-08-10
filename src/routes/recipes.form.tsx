@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { RecipeForm } from '#/components';
 
-const RecipeFormPage = () => {
+const RecipeFormPage = (): React.JSX.Element => {
   return (
     <main className='px-16 py-8 min-h-dvh flex flex-col gap-2 items-center'>
       <div

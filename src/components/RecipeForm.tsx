@@ -49,7 +49,7 @@ const defaultValues = {
   rating: 0,
 };
 
-export const RecipeForm = () => {
+export const RecipeForm = (): React.JSX.Element => {
   const [image, setImage] = useState('');
 
   const { mutate } = useMutation({
