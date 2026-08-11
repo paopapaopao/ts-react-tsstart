@@ -25,7 +25,12 @@ import {
   Input,
 } from './ui';
 
-const defaultValues = {
+type Props = {
+  values?: RecipeFormSchema;
+  label: string;
+};
+
+const defaultValues: RecipeFormSchema = {
   image: '',
   name: '',
   ingredient: '',
@@ -49,7 +54,10 @@ const defaultValues = {
   rating: 0,
 };
 
-export const RecipeForm = (): React.JSX.Element => {
+export const RecipeForm = ({
+  values = defaultValues,
+  label = 'Submit',
+}: Props): React.JSX.Element => {
   const [image, setImage] = useState('');
 
   const { mutate } = useMutation({
@@ -82,7 +90,7 @@ export const RecipeForm = (): React.JSX.Element => {
     handleSubmit,
     Field: FormField,
   } = useForm({
-    defaultValues,
+    defaultValues: values,
     validators: {
       onSubmit: recipeFormSchema,
     },
@@ -580,7 +588,7 @@ export const RecipeForm = (): React.JSX.Element => {
         type='submit'
         className='mbs-8'
       >
-        Create Recipe
+        {label}
       </Button>
     </form>
   );

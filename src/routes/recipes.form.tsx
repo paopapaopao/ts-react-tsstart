@@ -10,7 +10,7 @@ const RecipeFormPage = (): React.JSX.Element => {
           width: 'clamp(500px, 50%, 1000px)',
         }}
       >
-        <RecipeForm />
+        <RecipeForm label='Create Recipe' />
       </div>
     </main>
   );
