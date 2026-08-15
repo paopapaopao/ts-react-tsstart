@@ -23,7 +23,7 @@ const RecipeDetails = (): React.JSX.Element => {
     },
   });
 
-  const defaultValues = {
+  const defaultValues: RecipeFormSchema = {
     image: data?.image ?? '',
     name: data?.name ?? '',
     ingredient: '',
@@ -33,14 +33,14 @@ const RecipeDetails = (): React.JSX.Element => {
 
     prepTime: Number(data?.prepTime),
     cookTime: Number(data?.cookTime),
-    difficulty: data?.difficulty ?? '',
+    difficulty: (data?.difficulty ?? '') as RecipeFormSchema['difficulty'],
     servings: Number(data?.servings),
     calories: Number(data?.calories),
     cuisine: data?.cuisine ?? '',
     tag: '',
     tags: data?.tags ?? [],
     mealType: '',
-    mealTypes: data?.mealType ?? [],
+    mealTypes: (data?.mealType ?? []) as RecipeFormSchema['mealTypes'],
 
     userId: Number(data?.userId),
     reviewCount: Number(data?.reviewCount),

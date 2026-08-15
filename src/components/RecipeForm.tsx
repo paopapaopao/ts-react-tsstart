@@ -47,7 +47,7 @@ const defaultValues: RecipeFormSchema = {
   tag: '',
   tags: [] as string[],
   mealType: '',
-  mealTypes: [] as string[],
+  mealTypes: [],
 
   userId: 0,
   reviewCount: 0,
@@ -495,11 +495,14 @@ export const RecipeForm = ({
                   onValueChange={(value) => {
                     if (value === null) return;
 
-                    if (formState.values.mealTypes.includes(value)) return;
+                    const mealType =
+                      value as RecipeFormSchema['mealTypes'][number];
+
+                    if (formState.values.mealTypes.includes(mealType)) return;
 
                     setFieldValue('mealTypes', (prevValues) => [
                       ...prevValues,
-                      value,
+                      mealType,
                     ]);
 
                     setFieldValue('mealType', '');
