@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import type { Recipe } from '#/lib/types';
+import type { Recipe, RecipeFormSchema } from '#/lib/types';
 
 import { Button } from '#/components/ui';
 import { RecipeForm } from '#/components';
@@ -47,7 +47,42 @@ const RecipeDetails = (): React.JSX.Element => {
     rating: Number(data?.rating),
   };
 
+  const { mutate } = useMutation({
+    mutationFn: async (payload: RecipeFormSchema) => {
+      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
+        payload;
+
+      const response = await fetch(
+        `https://node-ts-fastify-production.up.railway.app/recipes/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok && result.errors !== null) {
+        throw new Error(Object.values(result.errors).flat().join('. ').trim());
+      }
+
+      return result;
+    },
+  });
+
   const [mode, setMode] = useState('VIEW');
+
+  const handleSubmit = (payload: RecipeFormSchema) => {
+    mutate(payload, {
+      onSuccess: (): void => {
+        alert('Recipe updated successfully!');
+      },
+      onError: (error: Error): void => {
+        alert(Object.values(error).flat().join('. ').trim());
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -134,6 +169,7 @@ const RecipeDetails = (): React.JSX.Element => {
               | 'Medium'
               | 'Hard',
           }}
+          onSubmit={handleSubmit}
           label='Update Recipe'
         />
       )}
