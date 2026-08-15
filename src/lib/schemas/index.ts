@@ -12,7 +12,7 @@ import {
   union,
 } from 'valibot';
 
-import { DIFFICULTIES } from '#/lib/constants';
+import { DIFFICULTIES, MEAL_TYPES } from '#/lib/constants';
 
 export const recipeFormSchema = object({
   image: string(),
@@ -40,7 +40,7 @@ export const recipeFormSchema = object({
   tag: string(),
   tags: array(string()),
   mealType: string(),
-  mealTypes: array(string()),
+  mealTypes: array(picklist(MEAL_TYPES, 'Must be an option from the list')),
 
   userId: number(),
   reviewCount: number(),
