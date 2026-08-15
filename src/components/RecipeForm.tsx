@@ -1,5 +1,4 @@
 import { useForm } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { DIFFICULTIES, MEAL_TYPES } from '#/lib/constants';
@@ -27,7 +26,8 @@ import {
 
 type Props = {
   values?: RecipeFormSchema;
-  label: string;
+  onSubmit?: (payload: RecipeFormSchema) => void | Promise<void>;
+  label?: string;
 };
 
 const defaultValues: RecipeFormSchema = {
@@ -56,33 +56,10 @@ const defaultValues: RecipeFormSchema = {
 
 export const RecipeForm = ({
   values = defaultValues,
+  onSubmit = () => {},
   label = 'Submit',
 }: Props): React.JSX.Element => {
   const [image, setImage] = useState('');
-
-  const { mutate } = useMutation({
-    mutationFn: async (payload: RecipeFormSchema) => {
-      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
-        payload;
-
-      const response = await fetch(
-        'https://node-ts-fastify-production.up.railway.app/recipes',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok && result.errors !== null) {
-        throw new Error(Object.values(result.errors).flat().join('. ').trim());
-      }
-
-      return result;
-    },
-  });
 
   const {
     state: formState,
@@ -95,14 +72,7 @@ export const RecipeForm = ({
       onSubmit: recipeFormSchema,
     },
     onSubmit: ({ value }) => {
-      mutate(value as RecipeFormSchema, {
-        onSuccess: (): void => {
-          alert('Recipe created successfully!');
-        },
-        onError: (error: Error): void => {
-          alert(Object.values(error).flat().join('. ').trim());
-        },
-      });
+      onSubmit(value);
     },
   });
 
@@ -241,10 +211,7 @@ export const RecipeForm = ({
                 {ingredientsState.value.length > 0 && (
                   <ul className='flex flex-col gap-2'>
                     {ingredientsState.value.map((ingredient, index) => (
-                      <Card
-                        className='py-0'
-                        key={`${index}-${ingredient}`}
-                      >
+                      <Card className='py-0' key={`${index}-${ingredient}`}>
                         <CardHeader className='flex items-center'>
                           <CardTitle className='flex-1'>{ingredient}</CardTitle>
                           <CardAction>
@@ -306,10 +273,7 @@ export const RecipeForm = ({
                 {instructionsState.value.length > 0 && (
                   <ul className='flex flex-col gap-2'>
                     {instructionsState.value.map((instruction, index) => (
-                      <Card
-                        className='py-0'
-                        key={`${index}-${instruction}`}
-                      >
+                      <Card className='py-0' key={`${index}-${instruction}`}>
                         <CardHeader className='flex items-center'>
                           <CardTitle className='flex-1'>
                             {instruction}
@@ -401,10 +365,7 @@ export const RecipeForm = ({
               <ComboboxContent>
                 <ComboboxList>
                   {(difficulty) => (
-                    <ComboboxItem
-                      key={difficulty}
-                      value={difficulty}
-                    >
+                    <ComboboxItem key={difficulty} value={difficulty}>
                       {difficulty}
                     </ComboboxItem>
                   )}
@@ -551,10 +512,7 @@ export const RecipeForm = ({
                   <ComboboxContent>
                     <ComboboxList>
                       {(mealType) => (
-                        <ComboboxItem
-                          key={mealType}
-                          value={mealType}
-                        >
+                        <ComboboxItem key={mealType} value={mealType}>
                           {mealType}
                         </ComboboxItem>
                       )}
@@ -584,10 +542,7 @@ export const RecipeForm = ({
         )}
       </FormField>
 
-      <Button
-        type='submit'
-        className='mbs-8'
-      >
+      <Button type='submit' className='mbs-8'>
         {label}
       </Button>
     </form>
