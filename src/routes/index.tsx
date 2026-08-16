@@ -81,22 +81,10 @@ const Home = (): React.JSX.Element => {
                         <dd>{recipe.cookTime} min</dd>
                       </div>
                     )}
-                    {recipe?.servings !== undefined && (
-                      <div className='flex justify-between'>
-                        <dt className='font-medium'>Servings</dt>
-                        <dd>{recipe.servings}</dd>
-                      </div>
-                    )}
                     {recipe?.difficulty && (
                       <div className='flex justify-between'>
                         <dt className='font-medium'>Difficulty</dt>
                         <dd>{recipe.difficulty}</dd>
-                      </div>
-                    )}
-                    {recipe?.calories !== undefined && (
-                      <div className='flex justify-between'>
-                        <dt className='font-medium'>Calories/Serv.</dt>
-                        <dd>{recipe.calories}</dd>
                       </div>
                     )}
                   </dl>

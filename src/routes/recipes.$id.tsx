@@ -107,49 +107,68 @@ const RecipeDetails = (): React.JSX.Element => {
         onClick={() => {
           setMode((prevMode) => (prevMode === 'VIEW' ? 'EDIT' : 'VIEW'));
         }}
+        className='cursor-pointer'
       >
-        Edit Recipe
+        {mode === 'VIEW' ? 'Edit Recipe' : 'Cancel'}
       </Button>
 
       {mode === 'VIEW' ? (
         <RecipeCard recipe={data}>
           {/* <div className='grid gap-4'> */}
           <div className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'>
-            <p className='justify-self-end'>Image</p>
+            <p className='justify-self-end leading-10 text-sm font-medium'>
+              Image
+            </p>
             <RecipeCard.Image />
-            <p className='justify-self-end'>Name</p>
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Name
+            </p>
             <RecipeCard.Name />
-            <p className='justify-self-end'>Ingredients</p>
+            <p className='justify-self-end leading-10 text-sm font-medium'>
+              Ingredients
+            </p>
             <RecipeCard.Ingredients />
-            <p className='justify-self-end'>Instructions</p>
+            <p className='justify-self-end leading-10 text-sm font-medium'>
+              Instructions
+            </p>
             <RecipeCard.Instructions />
 
             <FieldSeparator className='py-8 col-span-2' />
 
-            <p className='justify-self-end'>
-              Preparation Time
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Prep Time
               <i> (mins)</i>
             </p>
             <RecipeCard.PrepTime />
-            <p className='justify-self-end'>
+            <p className='justify-self-end leading-6 text-sm font-medium'>
               Cook Time
               <i> (mins)</i>
             </p>
             <RecipeCard.CookTime />
-            <p className='justify-self-end'>Difficulty</p>
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Difficulty
+            </p>
             <RecipeCard.Difficulty />
-            <p className='justify-self-end'>Servings</p>
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Servings
+            </p>
             <RecipeCard.Servings />
-            <p className='justify-self-end'>
+            <p className='justify-self-end leading-6 text-sm font-medium'>
               Calories
               <i> (/serving)</i>
             </p>
             <RecipeCard.Calories />
-            <p className='justify-self-end'>Cuisine</p>
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Cuisine
+            </p>
             <RecipeCard.Cuisine />
-            <p className='justify-self-end'>Tags</p>
+            <p className='justify-self-end leading-8 text-sm font-medium'>
+              Tags
+            </p>
             <RecipeCard.Tags />
-            <p className='justify-self-end'>Meal Types</p>
+            <p className='justify-self-end leading-8 text-sm font-medium'>
+              Meal Types
+            </p>
             <RecipeCard.MealTypes />
           </div>
         </RecipeCard>
