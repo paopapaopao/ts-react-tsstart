@@ -5,8 +5,8 @@ export const Image = (): React.JSX.Element => {
 
   return (
     <img
-      src={recipe?.image}
-      alt={recipe?.name}
+      src={recipe.image}
+      alt={recipe.name}
       className='w-full h-48 object-cover'
     />
   );

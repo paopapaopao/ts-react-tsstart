@@ -11,7 +11,7 @@ export const useRecipeCard = (): {
 
   if (context === null) {
     throw new Error(
-      'RecipeCard.* component must be rendered as a child of RecipeCard component',
+      'RecipeCard.* components must be rendered as a child of RecipeCard component',
     );
   }
 

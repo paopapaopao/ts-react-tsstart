@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import type { Recipe, RecipeFormSchema } from '#/lib/types';
 
-import { Button } from '#/components/ui';
+import { Button, FieldSeparator } from '#/components/ui';
 import { RecipeCard, RecipeForm } from '#/components';
 
 const RecipeDetails = (): React.JSX.Element => {
@@ -102,7 +102,7 @@ const RecipeDetails = (): React.JSX.Element => {
   }
 
   return (
-    <main className='px-16 py-8 flex justify-center'>
+    <main className='px-16 py-8 flex flex-col gap-8 justify-center'>
       <Button
         onClick={() => {
           setMode((prevMode) => (prevMode === 'VIEW' ? 'EDIT' : 'VIEW'));
@@ -112,7 +112,47 @@ const RecipeDetails = (): React.JSX.Element => {
       </Button>
 
       {mode === 'VIEW' ? (
-        <RecipeCard recipe={data} />
+        <RecipeCard recipe={data}>
+          {/* <div className='grid gap-4'> */}
+          <div className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'>
+            <p className='justify-self-end'>Image</p>
+            <RecipeCard.Image />
+            <p className='justify-self-end'>Name</p>
+            <RecipeCard.Name />
+            <p className='justify-self-end'>Ingredients</p>
+            <RecipeCard.Ingredients />
+            <p className='justify-self-end'>Instructions</p>
+            <RecipeCard.Instructions />
+
+            <FieldSeparator className='py-8 col-span-2' />
+
+            <p className='justify-self-end'>
+              Preparation Time
+              <i> (mins)</i>
+            </p>
+            <RecipeCard.PrepTime />
+            <p className='justify-self-end'>
+              Cook Time
+              <i> (mins)</i>
+            </p>
+            <RecipeCard.CookTime />
+            <p className='justify-self-end'>Difficulty</p>
+            <RecipeCard.Difficulty />
+            <p className='justify-self-end'>Servings</p>
+            <RecipeCard.Servings />
+            <p className='justify-self-end'>
+              Calories
+              <i> (/serving)</i>
+            </p>
+            <RecipeCard.Calories />
+            <p className='justify-self-end'>Cuisine</p>
+            <RecipeCard.Cuisine />
+            <p className='justify-self-end'>Tags</p>
+            <RecipeCard.Tags />
+            <p className='justify-self-end'>Meal Types</p>
+            <RecipeCard.MealTypes />
+          </div>
+        </RecipeCard>
       ) : (
         <RecipeForm
           values={{

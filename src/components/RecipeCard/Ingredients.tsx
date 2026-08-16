@@ -6,12 +6,12 @@ export const Ingredients = (): React.JSX.Element => {
   const { recipe } = useRecipeCard();
 
   return (
-    <ul>
+    <ul className='flex flex-col gap-2'>
       {recipe.ingredients.map((ingredient, index) => (
         <li key={`${index}-${ingredient}`}>
-          <Card className='py-0'>
-            <CardHeader className='flex items-center'>
-              <CardTitle className='flex-1'>{ingredient}</CardTitle>
+          <Card className='py-2'>
+            <CardHeader className='px-4'>
+              <CardTitle>{ingredient}</CardTitle>
             </CardHeader>
           </Card>
         </li>
