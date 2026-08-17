@@ -69,6 +69,7 @@ export const RecipeForm = ({
   } = useForm({
     defaultValues: values,
     validators: {
+      onBlur: recipeFormSchema,
       onSubmit: recipeFormSchema,
     },
     onSubmit: ({ value }) => {
@@ -179,7 +180,7 @@ export const RecipeForm = ({
       )} */}
 
       <FormField name='name'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
               htmlFor='name'
@@ -197,17 +198,16 @@ export const RecipeForm = ({
                 onChange={(event) => {
                   handleChange(event.target.value);
                 }}
+                onBlur={handleBlur}
               />
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
       </FormField>
 
       <FormField name='ingredient'>
-        {({ state: ingredientState, handleChange }) => (
+        {({ state: ingredientState, handleChange, handleBlur }) => (
           <FormField name='ingredients'>
             {({ state: ingredientsState }) => (
               <>
@@ -228,6 +228,7 @@ export const RecipeForm = ({
                       handleChange(event.target.value);
                     }}
                     onKeyDown={handleKeyDown('ingredient', 'ingredients')}
+                    onBlur={handleBlur}
                   />
                   {ingredientsState.value.length > 0 && (
                     <ul className='flex flex-col gap-2'>
@@ -255,9 +256,7 @@ export const RecipeForm = ({
                     </ul>
                   )}
                   <FieldError>
-                    {ingredientsState.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
+                    {ingredientsState.meta.errors[0]?.message}
                   </FieldError>
                 </Field>
               </>
@@ -267,7 +266,7 @@ export const RecipeForm = ({
       </FormField>
 
       <FormField name='instruction'>
-        {({ state: instructionState, handleChange }) => (
+        {({ state: instructionState, handleChange, handleBlur }) => (
           <FormField name='instructions'>
             {({ state: instructionsState }) => (
               <>
@@ -303,6 +302,7 @@ export const RecipeForm = ({
 
                       setFieldValue('instruction', '');
                     }}
+                    onBlur={handleBlur}
                   />
                   {instructionsState.value.length > 0 && (
                     <ul className='flex flex-col gap-2'>
@@ -330,9 +330,7 @@ export const RecipeForm = ({
                     </ul>
                   )}
                   <FieldError>
-                    {instructionsState.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
+                    {instructionsState.meta.errors[0]?.message}
                   </FieldError>
                 </Field>
               </>
@@ -344,7 +342,7 @@ export const RecipeForm = ({
       <FieldSeparator className='py-8 col-span-2' />
 
       <FormField name='prepTime'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
               htmlFor='prepTime'
@@ -362,17 +360,16 @@ export const RecipeForm = ({
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
                 }}
+                onBlur={handleBlur}
               />
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
       </FormField>
 
       <FormField name='cookTime'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
               htmlFor='cookTime'
@@ -390,10 +387,9 @@ export const RecipeForm = ({
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
                 }}
+                onBlur={handleBlur}
               />
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
@@ -431,16 +427,14 @@ export const RecipeForm = ({
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
       </FormField>
 
       <FormField name='servings'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
               htmlFor='servings'
@@ -458,17 +452,16 @@ export const RecipeForm = ({
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
                 }}
+                onBlur={handleBlur}
               />
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
       </FormField>
 
       <FormField name='calories'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
               htmlFor='calories'
@@ -486,17 +479,16 @@ export const RecipeForm = ({
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
                 }}
+                onBlur={handleBlur}
               />
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
       </FormField>
 
       <FormField name='cuisine'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
               htmlFor='cuisine'
@@ -514,10 +506,9 @@ export const RecipeForm = ({
                 onChange={(event) => {
                   handleChange(event.target.value);
                 }}
+                onBlur={handleBlur}
               />
-              <FieldError>
-                {state.meta.errors.map((error) => error?.message).join(', ')}
-              </FieldError>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
             </Field>
           </>
         )}
@@ -561,11 +552,7 @@ export const RecipeForm = ({
                       ))}
                     </ul>
                   )}
-                  <FieldError>
-                    {tagsState.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
-                  </FieldError>
+                  <FieldError>{tagsState.meta.errors[0]?.message}</FieldError>
                 </Field>
               </>
             )}
@@ -635,9 +622,7 @@ export const RecipeForm = ({
                     </ul>
                   )}
                   <FieldError>
-                    {mealTypesState.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
+                    {mealTypesState.meta.errors[0]?.message}
                   </FieldError>
                 </Field>
               </>
