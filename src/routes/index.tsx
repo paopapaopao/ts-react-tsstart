@@ -69,24 +69,18 @@ const Home = (): React.JSX.Element => {
                     <RecipeCard.Name />
                   </Link>
                   <dl className='grid grid-cols-1 gap-1 text-sm'>
-                    {recipe?.prepTime !== undefined && (
-                      <div className='flex justify-between'>
-                        <dt className='font-medium'>Prep Time</dt>
-                        <dd>{recipe.prepTime} min</dd>
-                      </div>
-                    )}
-                    {recipe?.cookTime !== undefined && (
-                      <div className='flex justify-between'>
-                        <dt className='font-medium'>Cook Time</dt>
-                        <dd>{recipe.cookTime} min</dd>
-                      </div>
-                    )}
-                    {recipe?.difficulty && (
-                      <div className='flex justify-between'>
-                        <dt className='font-medium'>Difficulty</dt>
-                        <dd>{recipe.difficulty}</dd>
-                      </div>
-                    )}
+                    <div className='flex justify-between'>
+                      <dt className='font-medium'>Prep Time</dt>
+                      <dd>{recipe.prepTime} min</dd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <dt className='font-medium'>Cook Time</dt>
+                      <dd>{recipe.cookTime} min</dd>
+                    </div>
+                    <div className='flex justify-between'>
+                      <dt className='font-medium'>Difficulty</dt>
+                      <dd>{recipe.difficulty}</dd>
+                    </div>
                   </dl>
                   {recipe?.tags?.length && (
                     <p className='mt-2 text-sm text-gray-600'>

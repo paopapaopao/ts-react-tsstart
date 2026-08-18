@@ -352,10 +352,17 @@ export const RecipeForm = ({
             </FieldLabel>
             <Field>
               <Input
-                id='prepTime'
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
                 placeholder='Enter preparation time (minutes)'
+                id='prepTime'
                 type='number'
-                aria-invalid={!state.meta.isValid}
                 value={state.value}
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
@@ -379,10 +386,17 @@ export const RecipeForm = ({
             </FieldLabel>
             <Field>
               <Input
-                id='cookTime'
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
                 placeholder='Enter cook time (minutes)'
+                id='cookTime'
                 type='number'
-                aria-invalid={!state.meta.isValid}
                 value={state.value}
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
@@ -444,10 +458,17 @@ export const RecipeForm = ({
             </FieldLabel>
             <Field>
               <Input
-                id='servings'
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
                 placeholder='Enter servings'
+                id='servings'
                 type='number'
-                aria-invalid={!state.meta.isValid}
                 value={state.value}
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
@@ -471,10 +492,17 @@ export const RecipeForm = ({
             </FieldLabel>
             <Field>
               <Input
-                id='calories'
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
                 placeholder='Enter calories'
+                id='calories'
                 type='number'
-                aria-invalid={!state.meta.isValid}
                 value={state.value}
                 onChange={(event) => {
                   handleChange(Number(event.target.value));
