@@ -568,7 +568,7 @@ export const RecipeForm = ({
                   {tagsState.value.length > 0 && (
                     <ul className='flex flex-wrap gap-2'>
                       {tagsState.value.map((tag, index) => (
-                        <Badge className='px-4 py-4'>
+                        <Badge className='px-4 py-4' key={`${index}-${tag}`}>
                           {tag}
                           <span
                             onClick={handleRemoveClick('tags', index)}
@@ -637,7 +637,10 @@ export const RecipeForm = ({
                   {mealTypesState.value.length > 0 && (
                     <ul className='flex flex-wrap gap-2'>
                       {mealTypesState.value.map((mealType, index) => (
-                        <Badge className='px-4 py-4'>
+                        <Badge
+                          className='px-4 py-4'
+                          key={`${index}-${mealType}`}
+                        >
                           {mealType}
                           <span
                             onClick={handleRemoveClick('mealTypes', index)}

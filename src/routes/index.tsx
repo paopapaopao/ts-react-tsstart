@@ -63,7 +63,7 @@ const Home = (): React.JSX.Element => {
                 <div className='p-4'>
                   <Link
                     to={`/recipes/$id`}
-                    params={{ id: recipe?.id.toString()! }}
+                    params={{ id: recipe?.id.toString() }}
                     className='text-xl font-semibold mb-2'
                   >
                     <RecipeCard.Name />
