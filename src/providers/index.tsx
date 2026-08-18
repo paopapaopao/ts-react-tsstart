@@ -4,10 +4,8 @@ type Props = { children: React.JSX.Element };
 
 const queryClient = new QueryClient();
 
-const Provider = ({ children }: Props) => {
+export const Provider = ({ children }: Props): React.JSX.Element => {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
-
-export default Provider;

@@ -1,6 +1,5 @@
 import { useForm } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 import { DIFFICULTIES, MEAL_TYPES } from '#/lib/constants';
 import { recipeFormSchema } from '#/lib/schemas';
@@ -25,7 +24,13 @@ import {
   Input,
 } from './ui';
 
-const defaultValues = {
+type Props = {
+  values?: RecipeFormSchema;
+  onSubmit?: (payload: RecipeFormSchema) => void | Promise<void>;
+  label?: string;
+};
+
+const defaultValues: RecipeFormSchema = {
   image: '',
   name: '',
   ingredient: '',
@@ -42,39 +47,19 @@ const defaultValues = {
   tag: '',
   tags: [] as string[],
   mealType: '',
-  mealTypes: [] as string[],
+  mealTypes: [],
 
   userId: 0,
   reviewCount: 0,
   rating: 0,
 };
 
-export const RecipeForm = () => {
-  const [image, setImage] = useState('');
-
-  const { mutate } = useMutation({
-    mutationFn: async (payload: RecipeFormSchema) => {
-      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
-        payload;
-
-      const response = await fetch(
-        'https://node-ts-fastify-production.up.railway.app/recipes',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok && result.errors !== null) {
-        throw new Error(Object.values(result.errors).flat().join('. ').trim());
-      }
-
-      return result;
-    },
-  });
+export const RecipeForm = ({
+  values = defaultValues,
+  onSubmit = () => {},
+  label = 'Submit',
+}: Props): React.JSX.Element => {
+  // const [image, setImage] = useState('');
 
   const {
     state: formState,
@@ -82,19 +67,13 @@ export const RecipeForm = () => {
     handleSubmit,
     Field: FormField,
   } = useForm({
-    defaultValues,
+    defaultValues: values,
     validators: {
+      onBlur: recipeFormSchema,
       onSubmit: recipeFormSchema,
     },
     onSubmit: ({ value }) => {
-      mutate(value as RecipeFormSchema, {
-        onSuccess: (): void => {
-          alert('Recipe created successfully!');
-        },
-        onError: (error: Error): void => {
-          alert(Object.values(error).flat().join('. ').trim());
-        },
-      });
+      onSubmit(value);
     },
   });
 
@@ -160,28 +139,36 @@ export const RecipeForm = () => {
 
         event.preventDefault();
       }}
-      className='flex flex-col gap-4'
+      // className='flex flex-col gap-4'
+      className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'
     >
-      <FormField name='image'>
+      {/* <FormField name='image'>
         {({ state, handleChange }) => (
-          <Field className='hidden'>
-            <FieldLabel htmlFor='image'>Image</FieldLabel>
-            <Input
-              type='file'
-              id='image'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
+          <>
+            <FieldLabel
+              htmlFor='image'
+              className='justify-self-end self-start leading-9'
+            >
+              Image
+            </FieldLabel>
+            <Field className='hidden'>
+              <Input
+                type='file'
+                id='image'
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(event.target.value);
 
-                const file = event.target.files?.[0];
+                  const file = event.target.files?.[0];
 
-                if (!file) return;
+                  if (!file) return;
 
-                setImage(URL.createObjectURL(file));
-              }}
-              accept='image/*'
-            />
-          </Field>
+                  setImage(URL.createObjectURL(file));
+                }}
+                accept='image/*'
+              />
+            </Field>
+          </>
         )}
       </FormField>
       {image && (
@@ -190,52 +177,63 @@ export const RecipeForm = () => {
           alt='Preview'
           className='h-48 w-48 rounded-md object-cover border'
         />
-      )}
+      )} */}
 
       <FormField name='name'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='name'>Name</FieldLabel>
-            <Input
-              id='name'
-              placeholder='Enter name'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-            />
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              htmlFor='name'
+              className='justify-self-end self-start leading-9'
+            >
+              Name
+            </FieldLabel>
+            <Field>
+              <Input
+                id='name'
+                placeholder='Enter name'
+                type='text'
+                aria-invalid={!state.meta.isValid}
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(event.target.value);
+                }}
+                onBlur={handleBlur}
+              />
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='ingredient'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='ingredient'>Ingredients</FieldLabel>
-            <Input
-              id='ingredient'
-              placeholder='Enter ingredients'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-              onKeyDown={handleKeyDown('ingredient', 'ingredients')}
-            />
-            <FormField name='ingredients'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
+        {({ state: ingredientState, handleChange, handleBlur }) => (
+          <FormField name='ingredients'>
+            {({ state: ingredientsState }) => (
+              <>
+                <FieldLabel
+                  htmlFor='ingredient'
+                  className='justify-self-end self-start leading-9'
+                >
+                  Ingredients
+                </FieldLabel>
+                <Field>
+                  <Input
+                    id='ingredient'
+                    placeholder='Enter ingredients'
+                    type='text'
+                    aria-invalid={!ingredientsState.meta.isValid}
+                    value={ingredientState.value}
+                    onChange={(event) => {
+                      handleChange(event.target.value);
+                    }}
+                    onKeyDown={handleKeyDown('ingredient', 'ingredients')}
+                    onBlur={handleBlur}
+                  />
+                  {ingredientsState.value.length > 0 && (
                     <ul className='flex flex-col gap-2'>
-                      {state.value.map((ingredient, index) => (
-                        <Card
-                          className='py-0'
-                          key={`${index}-${ingredient}`}
-                        >
+                      {ingredientsState.value.map((ingredient, index) => (
+                        <Card className='py-0' key={`${index}-${ingredient}`}>
                           <CardHeader className='flex items-center'>
                             <CardTitle className='flex-1'>
                               {ingredient}
@@ -247,6 +245,7 @@ export const RecipeForm = () => {
                                   'ingredients',
                                   index,
                                 )}
+                                className='cursor-pointer'
                               >
                                 X
                               </Button>
@@ -257,56 +256,58 @@ export const RecipeForm = () => {
                     </ul>
                   )}
                   <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
+                    {ingredientsState.meta.errors[0]?.message}
                   </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+                </Field>
+              </>
+            )}
+          </FormField>
         )}
       </FormField>
 
       <FormField name='instruction'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='instruction'>Instructions</FieldLabel>
-            <Input
-              id='instruction'
-              placeholder='Enter instructions'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-              onKeyDown={(event) => {
-                if (event.key !== 'Enter') return;
+        {({ state: instructionState, handleChange, handleBlur }) => (
+          <FormField name='instructions'>
+            {({ state: instructionsState }) => (
+              <>
+                <FieldLabel
+                  htmlFor='instruction'
+                  className='justify-self-end self-start leading-9'
+                >
+                  Instructions
+                </FieldLabel>
+                <Field>
+                  <Input
+                    id='instruction'
+                    placeholder='Enter instructions'
+                    type='text'
+                    aria-invalid={!instructionsState.meta.isValid}
+                    value={instructionState.value}
+                    onChange={(event) => {
+                      handleChange(event.target.value);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'Enter') return;
 
-                event.preventDefault();
+                      event.preventDefault();
 
-                const instruction = state.value.trim();
+                      const instruction = instructionState.value.trim();
 
-                if (instruction === '') return;
+                      if (instruction === '') return;
 
-                setFieldValue('instructions', (prevValues) => [
-                  ...prevValues,
-                  instruction,
-                ]);
+                      setFieldValue('instructions', (prevValues) => [
+                        ...prevValues,
+                        instruction,
+                      ]);
 
-                setFieldValue('instruction', '');
-              }}
-            />
-            <FormField name='instructions'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
+                      setFieldValue('instruction', '');
+                    }}
+                    onBlur={handleBlur}
+                  />
+                  {instructionsState.value.length > 0 && (
                     <ul className='flex flex-col gap-2'>
-                      {state.value.map((instruction, index) => (
-                        <Card
-                          className='py-0'
-                          key={`${index}-${instruction}`}
-                        >
+                      {instructionsState.value.map((instruction, index) => (
+                        <Card className='py-0' key={`${index}-${instruction}`}>
                           <CardHeader className='flex items-center'>
                             <CardTitle className='flex-1'>
                               {instruction}
@@ -318,6 +319,7 @@ export const RecipeForm = () => {
                                   'instructions',
                                   index,
                                 )}
+                                className='cursor-pointer'
                               >
                                 X
                               </Button>
@@ -328,237 +330,319 @@ export const RecipeForm = () => {
                     </ul>
                   )}
                   <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
+                    {instructionsState.meta.errors[0]?.message}
                   </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+                </Field>
+              </>
+            )}
+          </FormField>
         )}
       </FormField>
 
-      <FieldSeparator className='py-8' />
+      <FieldSeparator className='py-8 col-span-2' />
 
       <FormField name='prepTime'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='prepTime'>Prep Time</FieldLabel>
-            <Input
-              id='prepTime'
-              placeholder='Enter preparation time (minutes)'
-              type='number'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(Number(event.target.value));
-              }}
-            />
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              htmlFor='prepTime'
+              className='justify-self-end self-start leading-9'
+            >
+              Prep Time<i> (mins)</i>
+            </FieldLabel>
+            <Field>
+              <Input
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
+                placeholder='Enter preparation time (minutes)'
+                id='prepTime'
+                type='number'
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(Number(event.target.value));
+                }}
+                onBlur={handleBlur}
+              />
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='cookTime'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='cookTime'>Cook Time</FieldLabel>
-            <Input
-              id='cookTime'
-              placeholder='Enter cook time (minutes)'
-              type='number'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(Number(event.target.value));
-              }}
-            />
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              htmlFor='cookTime'
+              className='justify-self-end self-start leading-9'
+            >
+              Cook Time<i> (mins)</i>
+            </FieldLabel>
+            <Field>
+              <Input
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
+                placeholder='Enter cook time (minutes)'
+                id='cookTime'
+                type='number'
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(Number(event.target.value));
+                }}
+                onBlur={handleBlur}
+              />
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='difficulty'>
         {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='difficulty'>Difficulty</FieldLabel>
-            <Combobox
-              id='difficulty'
-              items={DIFFICULTIES}
-              value={state.value}
-              onValueChange={(value) => {
-                handleChange(value as RecipeFormSchema['difficulty']);
-              }}
+          <>
+            <FieldLabel
+              htmlFor='difficulty'
+              className='justify-self-end self-start leading-9'
             >
-              <ComboboxInput placeholder='Select difficulty' />
-              <ComboboxContent>
-                <ComboboxList>
-                  {(difficulty) => (
-                    <ComboboxItem
-                      key={difficulty}
-                      value={difficulty}
-                    >
-                      {difficulty}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+              Difficulty
+            </FieldLabel>
+            <Field>
+              <Combobox
+                id='difficulty'
+                items={DIFFICULTIES}
+                value={state.value}
+                onValueChange={(value) => {
+                  handleChange(value as RecipeFormSchema['difficulty']);
+                }}
+              >
+                <ComboboxInput
+                  placeholder='Select difficulty'
+                  aria-invalid={!state.meta.isValid}
+                />
+                <ComboboxContent>
+                  <ComboboxList>
+                    {(difficulty) => (
+                      <ComboboxItem key={difficulty} value={difficulty}>
+                        {difficulty}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='servings'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='servings'>Servings</FieldLabel>
-            <Input
-              id='servings'
-              placeholder='Enter servings'
-              type='number'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(Number(event.target.value));
-              }}
-            />
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              htmlFor='servings'
+              className='justify-self-end self-start leading-9'
+            >
+              Servings
+            </FieldLabel>
+            <Field>
+              <Input
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
+                placeholder='Enter servings'
+                id='servings'
+                type='number'
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(Number(event.target.value));
+                }}
+                onBlur={handleBlur}
+              />
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='calories'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='calories'>Calories</FieldLabel>
-            <Input
-              id='calories'
-              placeholder='Enter calories'
-              type='number'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(Number(event.target.value));
-              }}
-            />
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              htmlFor='calories'
+              className='justify-self-end self-start leading-9'
+            >
+              Calories<i> (/serving)</i>
+            </FieldLabel>
+            <Field>
+              <Input
+                className='
+                  aria-[invalid=false]:border-green-500
+                  aria-[invalid=false]:ring-3
+                  aria-[invalid=false]:ring-green-500/30
+                '
+                aria-invalid={
+                  state.meta.isTouched ? !state.meta.isValid : undefined
+                }
+                placeholder='Enter calories'
+                id='calories'
+                type='number'
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(Number(event.target.value));
+                }}
+                onBlur={handleBlur}
+              />
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='cuisine'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='cuisine'>Cuisine</FieldLabel>
-            <Input
-              id='cuisine'
-              placeholder='Enter cuisine'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-            />
-            <FieldError>
-              {state.meta.errors.map((error) => error?.message).join(', ')}
-            </FieldError>
-          </Field>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              htmlFor='cuisine'
+              className='justify-self-end self-start leading-9'
+            >
+              Cuisine
+            </FieldLabel>
+            <Field>
+              <Input
+                id='cuisine'
+                placeholder='Enter cuisine'
+                type='text'
+                aria-invalid={!state.meta.isValid}
+                value={state.value}
+                onChange={(event) => {
+                  handleChange(event.target.value);
+                }}
+                onBlur={handleBlur}
+              />
+              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
       <FormField name='tag'>
-        {({ state, handleChange }) => (
-          <Field>
-            <FieldLabel htmlFor='tag'>Tags</FieldLabel>
-            <Input
-              id='tag'
-              placeholder='Enter tags'
-              type='text'
-              value={state.value}
-              onChange={(event) => {
-                handleChange(event.target.value);
-              }}
-              onKeyDown={handleKeyDown('tag', 'tags')}
-            />
-            <FormField name='tags'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
+        {({ state: tagState, handleChange }) => (
+          <FormField name='tags'>
+            {({ state: tagsState }) => (
+              <>
+                <FieldLabel
+                  htmlFor='tag'
+                  className='justify-self-end self-start leading-9'
+                >
+                  Tags
+                </FieldLabel>
+                <Field>
+                  <Input
+                    id='tag'
+                    placeholder='Enter tags'
+                    type='text'
+                    aria-invalid={!tagsState.meta.isValid}
+                    value={tagState.value}
+                    onChange={(event) => {
+                      handleChange(event.target.value);
+                    }}
+                    onKeyDown={handleKeyDown('tag', 'tags')}
+                  />
+                  {tagsState.value.length > 0 && (
                     <ul className='flex flex-wrap gap-2'>
-                      {state.value.map((tag, index) => (
+                      {tagsState.value.map((tag, index) => (
                         <Badge className='px-4 py-4'>
                           {tag}
-                          <span onClick={handleRemoveClick('tags', index)}>
+                          <span
+                            onClick={handleRemoveClick('tags', index)}
+                            className='cursor-pointer'
+                          >
                             X
                           </span>
                         </Badge>
                       ))}
                     </ul>
                   )}
-                  <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
-                  </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+                  <FieldError>{tagsState.meta.errors[0]?.message}</FieldError>
+                </Field>
+              </>
+            )}
+          </FormField>
         )}
       </FormField>
 
       <FormField name='mealType'>
-        {({ state }) => (
-          <Field>
-            <FieldLabel htmlFor='mealType'>Meal Types</FieldLabel>
-            <Combobox
-              id='mealType'
-              items={MEAL_TYPES}
-              value={state.value}
-              onValueChange={(value) => {
-                if (value === null) return;
+        {({ state: mealTypeState }) => (
+          <FormField name='mealTypes'>
+            {({ state: mealTypesState }) => (
+              <>
+                <FieldLabel
+                  htmlFor='mealType'
+                  className='justify-self-end self-start leading-9'
+                >
+                  Meal Types
+                </FieldLabel>
+                <Field>
+                  <Combobox
+                    id='mealType'
+                    items={MEAL_TYPES}
+                    value={mealTypeState.value}
+                    onValueChange={(value) => {
+                      if (value === null) return;
 
-                if (formState.values.mealTypes.includes(value)) return;
+                      const mealType =
+                        value as RecipeFormSchema['mealTypes'][number];
 
-                setFieldValue('mealTypes', (prevValues) => [
-                  ...prevValues,
-                  value,
-                ]);
+                      if (formState.values.mealTypes.includes(mealType)) return;
 
-                setFieldValue('mealType', '');
-              }}
-            >
-              <ComboboxInput placeholder='Select meal types' />
-              <ComboboxContent>
-                <ComboboxList>
-                  {(mealType) => (
-                    <ComboboxItem
-                      key={mealType}
-                      value={mealType}
-                    >
-                      {mealType}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
-            <FormField name='mealTypes'>
-              {({ state }) => (
-                <>
-                  {state.value.length > 0 && (
+                      setFieldValue('mealTypes', (prevValues) => [
+                        ...prevValues,
+                        mealType,
+                      ]);
+
+                      setFieldValue('mealType', '');
+                    }}
+                  >
+                    <ComboboxInput
+                      placeholder='Select meal types'
+                      aria-invalid={!mealTypesState.meta.isValid}
+                    />
+                    <ComboboxContent>
+                      <ComboboxList>
+                        {(mealType) => (
+                          <ComboboxItem key={mealType} value={mealType}>
+                            {mealType}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                  {mealTypesState.value.length > 0 && (
                     <ul className='flex flex-wrap gap-2'>
-                      {state.value.map((mealType, index) => (
+                      {mealTypesState.value.map((mealType, index) => (
                         <Badge className='px-4 py-4'>
                           {mealType}
-                          <span onClick={handleRemoveClick('mealTypes', index)}>
+                          <span
+                            onClick={handleRemoveClick('mealTypes', index)}
+                            className='cursor-pointer'
+                          >
                             X
                           </span>
                         </Badge>
@@ -566,22 +650,17 @@ export const RecipeForm = () => {
                     </ul>
                   )}
                   <FieldError>
-                    {state.meta.errors
-                      .map((error) => error?.message)
-                      .join(', ')}
+                    {mealTypesState.meta.errors[0]?.message}
                   </FieldError>
-                </>
-              )}
-            </FormField>
-          </Field>
+                </Field>
+              </>
+            )}
+          </FormField>
         )}
       </FormField>
 
-      <Button
-        type='submit'
-        className='mbs-8'
-      >
-        Create Recipe
+      <Button type='submit' className='mbs-8 col-start-2 cursor-pointer'>
+        {label}
       </Button>
     </form>
   );

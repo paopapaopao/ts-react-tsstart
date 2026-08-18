@@ -1,7 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 
-import type { Recipe } from '#/lib/types';
+import type { Recipe, RecipeFormSchema } from '#/lib/types';
+
+import { Button, FieldSeparator } from '#/components/ui';
+import { RecipeCard, RecipeForm } from '#/components';
 
 const RecipeDetails = (): React.JSX.Element => {
   const { id } = Route.useParams();
@@ -18,6 +22,67 @@ const RecipeDetails = (): React.JSX.Element => {
       return data;
     },
   });
+
+  const defaultValues: RecipeFormSchema = {
+    image: data?.image ?? '',
+    name: data?.name ?? '',
+    ingredient: '',
+    ingredients: data?.ingredients ?? [],
+    instruction: '',
+    instructions: data?.instructions ?? [],
+
+    prepTime: Number(data?.prepTime),
+    cookTime: Number(data?.cookTime),
+    difficulty: (data?.difficulty ?? '') as RecipeFormSchema['difficulty'],
+    servings: Number(data?.servings),
+    calories: Number(data?.calories),
+    cuisine: data?.cuisine ?? '',
+    tag: '',
+    tags: data?.tags ?? [],
+    mealType: '',
+    mealTypes: (data?.mealType ?? []) as RecipeFormSchema['mealTypes'],
+
+    userId: Number(data?.userId),
+    reviewCount: Number(data?.reviewCount),
+    rating: Number(data?.rating),
+  };
+
+  const { mutate } = useMutation({
+    mutationFn: async (payload: RecipeFormSchema) => {
+      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
+        payload;
+
+      const response = await fetch(
+        `https://node-ts-fastify-production.up.railway.app/recipes/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok && result.errors !== null) {
+        throw new Error(Object.values(result.errors).flat().join('. ').trim());
+      }
+
+      return result;
+    },
+  });
+
+  const [mode, setMode] = useState('VIEW');
+
+  const handleSubmit = (payload: RecipeFormSchema) => {
+    mutate(payload, {
+      onSuccess: (): void => {
+        alert('Recipe updated successfully!');
+      },
+      onError: (error: Error): void => {
+        alert(Object.values(error).flat().join('. ').trim());
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -37,54 +102,90 @@ const RecipeDetails = (): React.JSX.Element => {
   }
 
   return (
-    <main className='px-16 py-8 flex justify-center'>
-      <article className='max-w-sm rounded-lg bg-white shadow-md overflow-hidden'>
-        <img
-          src={data?.image}
-          alt={data?.name}
-          className='w-full h-48 object-cover'
-        />
-        <div className='p-4'>
-          <h2 className='text-xl font-semibold mb-2'>{data?.name}</h2>
-          <dl className='grid grid-cols-1 gap-1 text-sm'>
-            {data?.prepTime !== undefined && (
-              <div className='flex justify-between'>
-                <dt className='font-medium'>Prep Time</dt>
-                <dd>{data.prepTime} min</dd>
-              </div>
-            )}
-            {data?.cookTime !== undefined && (
-              <div className='flex justify-between'>
-                <dt className='font-medium'>Cook Time</dt>
-                <dd>{data.cookTime} min</dd>
-              </div>
-            )}
-            {data?.servings !== undefined && (
-              <div className='flex justify-between'>
-                <dt className='font-medium'>Servings</dt>
-                <dd>{data.servings}</dd>
-              </div>
-            )}
-            {data?.difficulty && (
-              <div className='flex justify-between'>
-                <dt className='font-medium'>Difficulty</dt>
-                <dd>{data.difficulty}</dd>
-              </div>
-            )}
-            {data?.calories !== undefined && (
-              <div className='flex justify-between'>
-                <dt className='font-medium'>Calories/Serv.</dt>
-                <dd>{data.calories}</dd>
-              </div>
-            )}
-          </dl>
-          {data?.tags?.length && (
-            <p className='mt-2 text-sm text-gray-600'>
-              Tags: {data.tags.join(', ')}
+    <main className='px-16 py-8 flex flex-col gap-8 justify-center'>
+      <Button
+        onClick={() => {
+          setMode((prevMode) => (prevMode === 'VIEW' ? 'EDIT' : 'VIEW'));
+        }}
+        className='cursor-pointer'
+      >
+        {mode === 'VIEW' ? 'Edit Recipe' : 'Cancel'}
+      </Button>
+
+      {mode === 'VIEW' ? (
+        <RecipeCard recipe={data}>
+          {/* <div className='grid gap-4'> */}
+          <div className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'>
+            <p className='justify-self-end leading-10 text-sm font-medium'>
+              Image
             </p>
-          )}
-        </div>
-      </article>
+            <RecipeCard.Image />
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Name
+            </p>
+            <RecipeCard.Name />
+            <p className='justify-self-end leading-10 text-sm font-medium'>
+              Ingredients
+            </p>
+            <RecipeCard.Ingredients />
+            <p className='justify-self-end leading-10 text-sm font-medium'>
+              Instructions
+            </p>
+            <RecipeCard.Instructions />
+
+            <FieldSeparator className='py-8 col-span-2' />
+
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Prep Time
+              <i> (mins)</i>
+            </p>
+            <RecipeCard.PrepTime />
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Cook Time
+              <i> (mins)</i>
+            </p>
+            <RecipeCard.CookTime />
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Difficulty
+            </p>
+            <RecipeCard.Difficulty />
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Servings
+            </p>
+            <RecipeCard.Servings />
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Calories
+              <i> (/serving)</i>
+            </p>
+            <RecipeCard.Calories />
+            <p className='justify-self-end leading-6 text-sm font-medium'>
+              Cuisine
+            </p>
+            <RecipeCard.Cuisine />
+            <p className='justify-self-end leading-8 text-sm font-medium'>
+              Tags
+            </p>
+            <RecipeCard.Tags />
+            <p className='justify-self-end leading-8 text-sm font-medium'>
+              Meal Types
+            </p>
+            <RecipeCard.MealTypes />
+          </div>
+        </RecipeCard>
+      ) : (
+        <RecipeForm
+          values={{
+            ...defaultValues,
+            difficulty: defaultValues.difficulty as
+              | ''
+              | 'Easy'
+              | 'Medium'
+              | 'Hard',
+          }}
+          onSubmit={handleSubmit}
+          label='Update Recipe'
+        />
+      )}
     </main>
   );
 };
