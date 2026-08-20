@@ -30,6 +30,7 @@ import {
 } from './ui';
 
 type Props = {
+  className?: string;
   label?: string;
   values?: RecipeFormSchema;
   onSubmit?: (payload: RecipeFormSchema) => void | Promise<void>;
@@ -62,6 +63,7 @@ const defaultValues: RecipeFormSchema = {
  */
 
 export const RecipeForm = ({
+  className = '',
   label = 'Submit',
   values = defaultValues,
   onSubmit = () => {},
@@ -148,6 +150,11 @@ export const RecipeForm = ({
     };
   };
 
+  const formClassName = cn(
+    'grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4',
+    className,
+  );
+
   const classNames = cn(
     'aria-[invalid=false]:ring-3',
     'aria-[invalid=false]:ring-green-500/30',
@@ -156,7 +163,7 @@ export const RecipeForm = ({
 
   return (
     <form
-      className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'
+      className={formClassName}
       action=''
       onSubmit={(event) => {
         event.preventDefault();
@@ -173,7 +180,7 @@ export const RecipeForm = ({
         {({ state, handleChange }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='image'
             >
               Image
@@ -210,7 +217,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='name'
             >
               Name
@@ -240,7 +247,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='ingredients'
             >
               Ingredients
@@ -272,7 +279,6 @@ export const RecipeForm = ({
                           <CardTitle className='flex-1'>{ingredient}</CardTitle>
                           <CardAction>
                             <Button
-                              className='cursor-pointer'
                               variant='link'
                               onClick={handleClick({
                                 index,
@@ -300,7 +306,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='instructions'
             >
               Instructions
@@ -334,7 +340,6 @@ export const RecipeForm = ({
                           </CardTitle>
                           <CardAction>
                             <Button
-                              className='cursor-pointer'
                               variant='link'
                               onClick={handleClick({
                                 index,
@@ -364,7 +369,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='prepTime'
             >
               Prep Time
@@ -398,7 +403,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='cookTime'
             >
               Cook Time
@@ -432,7 +437,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='difficulty'
             >
               Difficulty
@@ -473,7 +478,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='servings'
             >
               Servings
@@ -504,7 +509,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='calories'
             >
               Calories
@@ -538,7 +543,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='cuisine'
             >
               Cuisine
@@ -568,7 +573,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='tags'
             >
               Tags
@@ -623,7 +628,7 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
-              className='justify-self-end self-start leading-9 cursor-pointer'
+              className='justify-self-end self-start leading-9'
               htmlFor='mealTypes'
             >
               Meal Types
@@ -676,7 +681,7 @@ export const RecipeForm = ({
         )}
       </FormField>
 
-      <Button type='submit' className='mbs-8 col-start-2 cursor-pointer'>
+      <Button type='submit' className='mbs-8 col-start-2'>
         {label}
       </Button>
     </form>

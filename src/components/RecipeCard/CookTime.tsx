@@ -1,7 +1,9 @@
 import { useRecipeCard } from './useRecipeCard';
 
-export const CookTime = (): React.JSX.Element => {
+type Props = { className?: string };
+
+export const CookTime = ({ className = '' }: Props): React.JSX.Element => {
   const { recipe } = useRecipeCard();
 
-  return <p>{recipe.cookTime}</p>;
+  return <p className={className}>{recipe.cookTime}</p>;
 };

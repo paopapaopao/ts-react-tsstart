@@ -1,7 +1,9 @@
 import { useRecipeCard } from './useRecipeCard';
 
-export const Calories = (): React.JSX.Element => {
+type Props = { className?: string };
+
+export const Calories = ({ className = '' }: Props): React.JSX.Element => {
   const { recipe } = useRecipeCard();
 
-  return <p>{recipe.calories}</p>;
+  return <p className={className}>{recipe.calories}</p>;
 };
