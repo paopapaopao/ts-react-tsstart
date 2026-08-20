@@ -1,9 +1,10 @@
-import { useForm } from '@tanstack/react-form';
-// import { useState } from 'react';
+import { type Updater, useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 
 import { DIFFICULTIES, MEAL_TYPES } from '#/lib/constants';
 import { recipeFormSchema } from '#/lib/schemas';
 import type { RecipeFormSchema } from '#/lib/types';
+import { cn } from '#/lib/utils';
 
 import {
   Badge,
@@ -13,10 +14,14 @@ import {
   CardHeader,
   CardTitle,
   Combobox,
+  ComboboxChip,
+  ComboboxChips,
   ComboboxContent,
+  ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
+  ComboboxValue,
   Field,
   FieldError,
   FieldLabel,
@@ -25,17 +30,15 @@ import {
 } from './ui';
 
 type Props = {
+  label?: string;
   values?: RecipeFormSchema;
   onSubmit?: (payload: RecipeFormSchema) => void | Promise<void>;
-  label?: string;
 };
 
 const defaultValues: RecipeFormSchema = {
   image: '',
   name: '',
-  ingredient: '',
   ingredients: [] as string[],
-  instruction: '',
   instructions: [] as string[],
 
   prepTime: 0,
@@ -44,9 +47,7 @@ const defaultValues: RecipeFormSchema = {
   servings: 0,
   calories: 0,
   cuisine: '',
-  tag: '',
   tags: [] as string[],
-  mealType: '',
   mealTypes: [],
 
   userId: 0,
@@ -54,19 +55,23 @@ const defaultValues: RecipeFormSchema = {
   rating: 0,
 };
 
+/**
+ * TODO
+ *  - Add on focus styles (yellow)
+ *  - Set combobox and input:number icons to cursor pointer
+ */
+
 export const RecipeForm = ({
+  label = 'Submit',
   values = defaultValues,
   onSubmit = () => {},
-  label = 'Submit',
 }: Props): React.JSX.Element => {
   // const [image, setImage] = useState('');
+  const [ingredient, setIngredient] = useState('');
+  const [instruction, setInstruction] = useState('');
+  const [tag, setTag] = useState('');
 
-  const {
-    state: formState,
-    setFieldValue,
-    handleSubmit,
-    Field: FormField,
-  } = useForm({
+  const { handleSubmit, Field: FormField } = useForm({
     defaultValues: values,
     validators: {
       onBlur: recipeFormSchema,
@@ -77,10 +82,19 @@ export const RecipeForm = ({
     },
   });
 
-  const handleKeyDown = (
-    inputField: 'ingredient' | 'instruction' | 'tag',
-    arrayField: 'ingredients' | 'instructions' | 'tags',
-  ) => {
+  const isInvalid = (state: {
+    meta: { isTouched: boolean; isValid: boolean };
+  }) => (state.meta.isTouched ? !state.meta.isValid : undefined);
+
+  const handleKeyDown = ({
+    isUnique,
+    onChange,
+    setState,
+  }: {
+    isUnique: boolean;
+    onChange: (updater: Updater<string[]>) => void;
+    setState: React.Dispatch<React.SetStateAction<string>>;
+  }) => {
     return (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key !== 'Enter') return;
 
@@ -90,35 +104,59 @@ export const RecipeForm = ({
 
       if (value === '') return;
 
-      if (formState.values[arrayField].includes(value)) {
-        setFieldValue(inputField, '');
-
-        return;
-      }
-
-      setFieldValue(arrayField, (prev) => {
-        if (prev.includes(value)) {
-          return prev;
+      onChange((previousValue) => {
+        if (previousValue.includes(value) && isUnique) {
+          return previousValue;
         }
 
-        return [...prev, value];
+        return [...previousValue, value];
       });
 
-      setFieldValue(inputField, '');
+      setState('');
     };
   };
 
-  const handleRemoveClick = (
-    field: 'ingredients' | 'instructions' | 'tags' | 'mealTypes',
-    index: number,
-  ) => {
-    return () => {
-      setFieldValue(field, (prev) => prev.filter((_, i) => i !== index));
+  const handleInputChange = <T,>({
+    onChange,
+    parse,
+  }: {
+    onChange: (value: T) => void;
+    parse: (value: string) => T;
+  }) => {
+    return (event: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(parse(event.target.value));
     };
   };
+
+  const handleValueChange = <T,>(onChange: (value: T) => void) => {
+    return (value: T | null) => {
+      if (value === null) return;
+
+      onChange(value);
+    };
+  };
+
+  const handleClick = ({
+    index,
+    onChange,
+  }: {
+    index: number;
+    onChange: (updater: Updater<string[]>) => void;
+  }) => {
+    return () => {
+      onChange((value) => value.filter((_, i) => i !== index));
+    };
+  };
+
+  const classNames = cn(
+    'aria-[invalid=false]:ring-3',
+    'aria-[invalid=false]:ring-green-500/30',
+    'aria-[invalid=false]:border-green-500',
+  );
 
   return (
     <form
+      className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'
       action=''
       onSubmit={(event) => {
         event.preventDefault();
@@ -128,33 +166,22 @@ export const RecipeForm = ({
       onKeyDown={(event) => {
         if (event.key !== 'Enter') return;
 
-        const target = event.target as HTMLElement;
-
-        if (
-          target instanceof HTMLInputElement &&
-          ['ingredient', 'instruction', 'tag'].includes(target.id)
-        ) {
-          return;
-        }
-
         event.preventDefault();
       }}
-      // className='flex flex-col gap-4'
-      className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'
     >
       {/* <FormField name='image'>
         {({ state, handleChange }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='image'
-              className='justify-self-end self-start leading-9'
             >
               Image
             </FieldLabel>
             <Field className='hidden'>
               <Input
-                type='file'
                 id='image'
+                type='file'
                 value={state.value}
                 onChange={(event) => {
                   handleChange(event.target.value);
@@ -183,159 +210,151 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='name'
-              className='justify-self-end self-start leading-9'
             >
               Name
             </FieldLabel>
-            <Field>
+            <Field className='gap-2'>
               <Input
-                id='name'
+                className={classNames}
+                aria-invalid={isInvalid(state)}
                 placeholder='Enter name'
-                type='text'
-                aria-invalid={!state.meta.isValid}
+                id='name'
                 value={state.value}
-                onChange={(event) => {
-                  handleChange(event.target.value);
-                }}
+                onChange={handleInputChange({
+                  onChange: handleChange,
+                  parse: (value) => value,
+                })}
                 onBlur={handleBlur}
               />
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
       </FormField>
 
-      <FormField name='ingredient'>
-        {({ state: ingredientState, handleChange, handleBlur }) => (
-          <FormField name='ingredients'>
-            {({ state: ingredientsState }) => (
-              <>
-                <FieldLabel
-                  htmlFor='ingredient'
-                  className='justify-self-end self-start leading-9'
-                >
-                  Ingredients
-                </FieldLabel>
-                <Field>
-                  <Input
-                    id='ingredient'
-                    placeholder='Enter ingredients'
-                    type='text'
-                    aria-invalid={!ingredientsState.meta.isValid}
-                    value={ingredientState.value}
-                    onChange={(event) => {
-                      handleChange(event.target.value);
-                    }}
-                    onKeyDown={handleKeyDown('ingredient', 'ingredients')}
-                    onBlur={handleBlur}
-                  />
-                  {ingredientsState.value.length > 0 && (
-                    <ul className='flex flex-col gap-2'>
-                      {ingredientsState.value.map((ingredient, index) => (
-                        <Card className='py-0' key={`${index}-${ingredient}`}>
-                          <CardHeader className='flex items-center'>
-                            <CardTitle className='flex-1'>
-                              {ingredient}
-                            </CardTitle>
-                            <CardAction>
-                              <Button
-                                variant='link'
-                                onClick={handleRemoveClick(
-                                  'ingredients',
-                                  index,
-                                )}
-                                className='cursor-pointer'
-                              >
-                                X
-                              </Button>
-                            </CardAction>
-                          </CardHeader>
-                        </Card>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {ingredientsState.meta.errors[0]?.message}
-                  </FieldError>
-                </Field>
-              </>
-            )}
-          </FormField>
+      <FormField name='ingredients'>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
+              htmlFor='ingredients'
+            >
+              Ingredients
+            </FieldLabel>
+            <Field className='gap-2'>
+              <Input
+                className={classNames}
+                aria-invalid={isInvalid(state)}
+                placeholder='Enter ingredients'
+                id='ingredients'
+                value={ingredient}
+                onKeyDown={handleKeyDown({
+                  isUnique: true,
+                  onChange: handleChange,
+                  setState: setIngredient,
+                })}
+                onChange={handleInputChange({
+                  onChange: setIngredient,
+                  parse: (value) => value,
+                })}
+                onBlur={handleBlur}
+              />
+              {state.value.length > 0 && (
+                <ul className='flex flex-col gap-2'>
+                  {state.value.map((ingredient, index) => (
+                    <li key={`${index}-${ingredient}`}>
+                      <Card className='py-0'>
+                        <CardHeader className='flex items-center'>
+                          <CardTitle className='flex-1'>{ingredient}</CardTitle>
+                          <CardAction>
+                            <Button
+                              className='cursor-pointer'
+                              variant='link'
+                              onClick={handleClick({
+                                index,
+                                onChange: handleChange,
+                              })}
+                            >
+                              X
+                            </Button>
+                          </CardAction>
+                        </CardHeader>
+                      </Card>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
-      <FormField name='instruction'>
-        {({ state: instructionState, handleChange, handleBlur }) => (
-          <FormField name='instructions'>
-            {({ state: instructionsState }) => (
-              <>
-                <FieldLabel
-                  htmlFor='instruction'
-                  className='justify-self-end self-start leading-9'
-                >
-                  Instructions
-                </FieldLabel>
-                <Field>
-                  <Input
-                    id='instruction'
-                    placeholder='Enter instructions'
-                    type='text'
-                    aria-invalid={!instructionsState.meta.isValid}
-                    value={instructionState.value}
-                    onChange={(event) => {
-                      handleChange(event.target.value);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter') return;
-
-                      event.preventDefault();
-
-                      const instruction = instructionState.value.trim();
-
-                      if (instruction === '') return;
-
-                      setFieldValue('instructions', (prevValues) => [
-                        ...prevValues,
-                        instruction,
-                      ]);
-
-                      setFieldValue('instruction', '');
-                    }}
-                    onBlur={handleBlur}
-                  />
-                  {instructionsState.value.length > 0 && (
-                    <ul className='flex flex-col gap-2'>
-                      {instructionsState.value.map((instruction, index) => (
-                        <Card className='py-0' key={`${index}-${instruction}`}>
-                          <CardHeader className='flex items-center'>
-                            <CardTitle className='flex-1'>
-                              {instruction}
-                            </CardTitle>
-                            <CardAction>
-                              <Button
-                                variant='link'
-                                onClick={handleRemoveClick(
-                                  'instructions',
-                                  index,
-                                )}
-                                className='cursor-pointer'
-                              >
-                                X
-                              </Button>
-                            </CardAction>
-                          </CardHeader>
-                        </Card>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {instructionsState.meta.errors[0]?.message}
-                  </FieldError>
-                </Field>
-              </>
-            )}
-          </FormField>
+      <FormField name='instructions'>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
+              htmlFor='instructions'
+            >
+              Instructions
+            </FieldLabel>
+            <Field className='gap-2'>
+              <Input
+                className={classNames}
+                aria-invalid={isInvalid(state)}
+                placeholder='Enter instructions'
+                id='instructions'
+                value={instruction}
+                onKeyDown={handleKeyDown({
+                  isUnique: false,
+                  onChange: handleChange,
+                  setState: setInstruction,
+                })}
+                onChange={handleInputChange({
+                  onChange: setInstruction,
+                  parse: (value) => value,
+                })}
+                onBlur={handleBlur}
+              />
+              {state.value.length > 0 && (
+                <ul className='flex flex-col gap-2'>
+                  {state.value.map((instruction, index) => (
+                    <li key={`${index}-${instruction}`}>
+                      <Card className='py-0'>
+                        <CardHeader className='flex items-center'>
+                          <CardTitle className='flex-1'>
+                            {instruction}
+                          </CardTitle>
+                          <CardAction>
+                            <Button
+                              className='cursor-pointer'
+                              variant='link'
+                              onClick={handleClick({
+                                index,
+                                onChange: handleChange,
+                              })}
+                            >
+                              X
+                            </Button>
+                          </CardAction>
+                        </CardHeader>
+                      </Card>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
@@ -345,31 +364,31 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='prepTime'
-              className='justify-self-end self-start leading-9'
             >
-              Prep Time<i> (mins)</i>
+              Prep Time
             </FieldLabel>
-            <Field>
-              <Input
-                className='
-                  aria-[invalid=false]:border-green-500
-                  aria-[invalid=false]:ring-3
-                  aria-[invalid=false]:ring-green-500/30
-                '
-                aria-invalid={
-                  state.meta.isTouched ? !state.meta.isValid : undefined
-                }
-                placeholder='Enter preparation time (minutes)'
-                id='prepTime'
-                type='number'
-                value={state.value}
-                onChange={(event) => {
-                  handleChange(Number(event.target.value));
-                }}
-                onBlur={handleBlur}
-              />
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            <Field className='gap-2'>
+              <div className='flex items-center gap-4'>
+                <Input
+                  className={classNames}
+                  aria-invalid={isInvalid(state)}
+                  placeholder='Enter preparation time'
+                  id='prepTime'
+                  type='number'
+                  value={state.value}
+                  onChange={handleInputChange({
+                    onChange: handleChange,
+                    parse: Number,
+                  })}
+                  onBlur={handleBlur}
+                />
+                <p>mins</p>
+              </div>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
@@ -379,59 +398,60 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='cookTime'
-              className='justify-self-end self-start leading-9'
             >
-              Cook Time<i> (mins)</i>
+              Cook Time
             </FieldLabel>
-            <Field>
-              <Input
-                className='
-                  aria-[invalid=false]:border-green-500
-                  aria-[invalid=false]:ring-3
-                  aria-[invalid=false]:ring-green-500/30
-                '
-                aria-invalid={
-                  state.meta.isTouched ? !state.meta.isValid : undefined
-                }
-                placeholder='Enter cook time (minutes)'
-                id='cookTime'
-                type='number'
-                value={state.value}
-                onChange={(event) => {
-                  handleChange(Number(event.target.value));
-                }}
-                onBlur={handleBlur}
-              />
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            <Field className='gap-2'>
+              <div className='flex items-center gap-4'>
+                <Input
+                  className={classNames}
+                  aria-invalid={isInvalid(state)}
+                  placeholder='Enter cook time'
+                  id='cookTime'
+                  type='number'
+                  value={state.value}
+                  onChange={handleInputChange({
+                    onChange: handleChange,
+                    parse: Number,
+                  })}
+                  onBlur={handleBlur}
+                />
+                <p>mins</p>
+              </div>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
       </FormField>
 
       <FormField name='difficulty'>
-        {({ state, handleChange }) => (
+        {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='difficulty'
-              className='justify-self-end self-start leading-9'
             >
               Difficulty
             </FieldLabel>
-            <Field>
+            <Field className='gap-2'>
               <Combobox
                 id='difficulty'
                 items={DIFFICULTIES}
                 value={state.value}
-                onValueChange={(value) => {
-                  handleChange(value as RecipeFormSchema['difficulty']);
-                }}
+                onValueChange={handleValueChange(handleChange)}
               >
                 <ComboboxInput
+                  className={classNames}
+                  aria-invalid={isInvalid(state)}
                   placeholder='Select difficulty'
-                  aria-invalid={!state.meta.isValid}
+                  onBlur={handleBlur}
                 />
                 <ComboboxContent>
+                  <ComboboxEmpty>Difficulty not found</ComboboxEmpty>
                   <ComboboxList>
                     {(difficulty) => (
                       <ComboboxItem key={difficulty} value={difficulty}>
@@ -441,7 +461,9 @@ export const RecipeForm = ({
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
@@ -451,31 +473,28 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='servings'
-              className='justify-self-end self-start leading-9'
             >
               Servings
             </FieldLabel>
-            <Field>
+            <Field className='gap-2'>
               <Input
-                className='
-                  aria-[invalid=false]:border-green-500
-                  aria-[invalid=false]:ring-3
-                  aria-[invalid=false]:ring-green-500/30
-                '
-                aria-invalid={
-                  state.meta.isTouched ? !state.meta.isValid : undefined
-                }
+                className={classNames}
+                aria-invalid={isInvalid(state)}
                 placeholder='Enter servings'
                 id='servings'
                 type='number'
                 value={state.value}
-                onChange={(event) => {
-                  handleChange(Number(event.target.value));
-                }}
+                onChange={handleInputChange({
+                  onChange: handleChange,
+                  parse: Number,
+                })}
                 onBlur={handleBlur}
               />
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
@@ -485,31 +504,31 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='calories'
-              className='justify-self-end self-start leading-9'
             >
-              Calories<i> (/serving)</i>
+              Calories
             </FieldLabel>
-            <Field>
-              <Input
-                className='
-                  aria-[invalid=false]:border-green-500
-                  aria-[invalid=false]:ring-3
-                  aria-[invalid=false]:ring-green-500/30
-                '
-                aria-invalid={
-                  state.meta.isTouched ? !state.meta.isValid : undefined
-                }
-                placeholder='Enter calories'
-                id='calories'
-                type='number'
-                value={state.value}
-                onChange={(event) => {
-                  handleChange(Number(event.target.value));
-                }}
-                onBlur={handleBlur}
-              />
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+            <Field className='gap-2'>
+              <div className='flex items-center gap-4'>
+                <Input
+                  className={classNames}
+                  aria-invalid={isInvalid(state)}
+                  placeholder='Enter calories'
+                  id='calories'
+                  type='number'
+                  value={state.value}
+                  onChange={handleInputChange({
+                    onChange: handleChange,
+                    parse: Number,
+                  })}
+                  onBlur={handleBlur}
+                />
+                <p>/serving</p>
+              </div>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
@@ -519,146 +538,141 @@ export const RecipeForm = ({
         {({ state, handleChange, handleBlur }) => (
           <>
             <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
               htmlFor='cuisine'
-              className='justify-self-end self-start leading-9'
             >
               Cuisine
             </FieldLabel>
-            <Field>
+            <Field className='gap-2'>
               <Input
-                id='cuisine'
+                className={classNames}
+                aria-invalid={isInvalid(state)}
                 placeholder='Enter cuisine'
-                type='text'
-                aria-invalid={!state.meta.isValid}
+                id='cuisine'
                 value={state.value}
-                onChange={(event) => {
-                  handleChange(event.target.value);
-                }}
+                onChange={handleInputChange({
+                  onChange: handleChange,
+                  parse: (value) => value,
+                })}
                 onBlur={handleBlur}
               />
-              <FieldError>{state.meta.errors[0]?.message}</FieldError>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
             </Field>
           </>
         )}
       </FormField>
 
-      <FormField name='tag'>
-        {({ state: tagState, handleChange }) => (
-          <FormField name='tags'>
-            {({ state: tagsState }) => (
-              <>
-                <FieldLabel
-                  htmlFor='tag'
-                  className='justify-self-end self-start leading-9'
-                >
-                  Tags
-                </FieldLabel>
-                <Field>
-                  <Input
-                    id='tag'
-                    placeholder='Enter tags'
-                    type='text'
-                    aria-invalid={!tagsState.meta.isValid}
-                    value={tagState.value}
-                    onChange={(event) => {
-                      handleChange(event.target.value);
-                    }}
-                    onKeyDown={handleKeyDown('tag', 'tags')}
-                  />
-                  {tagsState.value.length > 0 && (
-                    <ul className='flex flex-wrap gap-2'>
-                      {tagsState.value.map((tag, index) => (
-                        <Badge className='px-4 py-4' key={`${index}-${tag}`}>
-                          {tag}
-                          <span
-                            onClick={handleRemoveClick('tags', index)}
-                            className='cursor-pointer'
-                          >
-                            X
-                          </span>
-                        </Badge>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>{tagsState.meta.errors[0]?.message}</FieldError>
-                </Field>
-              </>
-            )}
-          </FormField>
+      <FormField name='tags'>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
+              htmlFor='tags'
+            >
+              Tags
+            </FieldLabel>
+            <Field className='gap-2'>
+              <Input
+                className={classNames}
+                aria-invalid={isInvalid(state)}
+                placeholder='Enter tags'
+                id='tags'
+                value={tag}
+                onKeyDown={handleKeyDown({
+                  onChange: handleChange,
+                  isUnique: true,
+                  setState: setTag,
+                })}
+                onChange={handleInputChange({
+                  onChange: setTag,
+                  parse: (value) => value,
+                })}
+                onBlur={handleBlur}
+              />
+              {state.value.length > 0 && (
+                <ul className='flex flex-wrap gap-2'>
+                  {state.value.map((tag, index) => (
+                    <li key={`${index}-${tag}`}>
+                      <Badge className='px-4 py-4'>
+                        {tag}
+                        <span
+                          className='cursor-pointer'
+                          onClick={handleClick({
+                            index,
+                            onChange: handleChange,
+                          })}
+                        >
+                          X
+                        </span>
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
-      <FormField name='mealType'>
-        {({ state: mealTypeState }) => (
-          <FormField name='mealTypes'>
-            {({ state: mealTypesState }) => (
-              <>
-                <FieldLabel
-                  htmlFor='mealType'
-                  className='justify-self-end self-start leading-9'
-                >
-                  Meal Types
-                </FieldLabel>
-                <Field>
-                  <Combobox
-                    id='mealType'
-                    items={MEAL_TYPES}
-                    value={mealTypeState.value}
-                    onValueChange={(value) => {
-                      if (value === null) return;
-
-                      const mealType =
-                        value as RecipeFormSchema['mealTypes'][number];
-
-                      if (formState.values.mealTypes.includes(mealType)) return;
-
-                      setFieldValue('mealTypes', (prevValues) => [
-                        ...prevValues,
-                        mealType,
-                      ]);
-
-                      setFieldValue('mealType', '');
-                    }}
-                  >
-                    <ComboboxInput
-                      placeholder='Select meal types'
-                      aria-invalid={!mealTypesState.meta.isValid}
-                    />
-                    <ComboboxContent>
-                      <ComboboxList>
-                        {(mealType) => (
-                          <ComboboxItem key={mealType} value={mealType}>
-                            {mealType}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  {mealTypesState.value.length > 0 && (
-                    <ul className='flex flex-wrap gap-2'>
-                      {mealTypesState.value.map((mealType, index) => (
-                        <Badge
-                          className='px-4 py-4'
-                          key={`${index}-${mealType}`}
-                        >
-                          {mealType}
-                          <span
-                            onClick={handleRemoveClick('mealTypes', index)}
-                            className='cursor-pointer'
-                          >
-                            X
-                          </span>
-                        </Badge>
-                      ))}
-                    </ul>
-                  )}
-                  <FieldError>
-                    {mealTypesState.meta.errors[0]?.message}
-                  </FieldError>
-                </Field>
-              </>
-            )}
-          </FormField>
+      <FormField name='mealTypes'>
+        {({ state, handleChange, handleBlur }) => (
+          <>
+            <FieldLabel
+              className='justify-self-end self-start leading-9 cursor-pointer'
+              htmlFor='mealTypes'
+            >
+              Meal Types
+            </FieldLabel>
+            <Field className='gap-2'>
+              <Combobox
+                id='mealTypes'
+                items={MEAL_TYPES}
+                multiple
+                value={state.value}
+                onValueChange={handleValueChange(handleChange)}
+              >
+                <ComboboxInput
+                  className={classNames}
+                  aria-invalid={isInvalid(state)}
+                  placeholder='Select meal types'
+                  onBlur={handleBlur}
+                />
+                <ComboboxChips>
+                  <ComboboxValue>
+                    {(values) =>
+                      values.length > 0 && (
+                        <ul className='flex flex-wrap gap-2'>
+                          {values.map((mealType: string, index: number) => (
+                            <li key={`${index}-${mealType}`}>
+                              <ComboboxChip>{mealType}</ComboboxChip>
+                            </li>
+                          ))}
+                        </ul>
+                      )
+                    }
+                  </ComboboxValue>
+                </ComboboxChips>
+                <ComboboxContent>
+                  <ComboboxEmpty>Meal type not found</ComboboxEmpty>
+                  <ComboboxList>
+                    {(mealType) => (
+                      <ComboboxItem key={mealType} value={mealType}>
+                        {mealType}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              <FieldError>
+                {state.meta.isTouched && state.meta.errors[0]?.message}
+              </FieldError>
+            </Field>
+          </>
         )}
       </FormField>
 
