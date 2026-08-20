@@ -8,8 +8,7 @@ import { RecipeForm } from '#/components';
 const RecipeFormPage = (): React.JSX.Element => {
   const { mutate } = useMutation({
     mutationFn: async (payload: RecipeFormSchema) => {
-      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
-        payload;
+      const { mealTypes, ...filteredPayload } = payload;
 
       const response = await fetch(
         'https://node-ts-fastify-production.up.railway.app/recipes',

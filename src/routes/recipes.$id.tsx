@@ -26,9 +26,7 @@ const RecipeDetails = (): React.JSX.Element => {
   const defaultValues: RecipeFormSchema = {
     image: data?.image ?? '',
     name: data?.name ?? '',
-    ingredient: '',
     ingredients: data?.ingredients ?? [],
-    instruction: '',
     instructions: data?.instructions ?? [],
 
     prepTime: Number(data?.prepTime),
@@ -37,9 +35,7 @@ const RecipeDetails = (): React.JSX.Element => {
     servings: Number(data?.servings),
     calories: Number(data?.calories),
     cuisine: data?.cuisine ?? '',
-    tag: '',
     tags: data?.tags ?? [],
-    mealType: '',
     mealTypes: (data?.mealType ?? []) as RecipeFormSchema['mealTypes'],
 
     userId: Number(data?.userId),
@@ -49,8 +45,7 @@ const RecipeDetails = (): React.JSX.Element => {
 
   const { mutate } = useMutation({
     mutationFn: async (payload: RecipeFormSchema) => {
-      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
-        payload;
+      const { mealTypes, ...filteredPayload } = payload;
 
       const response = await fetch(
         `https://node-ts-fastify-production.up.railway.app/recipes/${id}`,
