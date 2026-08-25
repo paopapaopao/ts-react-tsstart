@@ -2,12 +2,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { updateRecipe } from '#/lib/apis';
 import type { Recipe, RecipeFormSchema } from '#/lib/types';
 
 import { Button, FieldSeparator } from '#/components/ui';
 import { RecipeCard, RecipeForm } from '#/components';
 
-const RecipeDetails = (): React.JSX.Element => {
+const Page = (): React.JSX.Element => {
   const { id } = Route.useParams();
 
   const { isLoading, isError, error, data } = useQuery({
@@ -44,39 +45,23 @@ const RecipeDetails = (): React.JSX.Element => {
   };
 
   const { mutate } = useMutation({
-    mutationFn: async (payload: RecipeFormSchema) => {
-      const { mealTypes, ...filteredPayload } = payload;
-
-      const response = await fetch(
-        `https://node-ts-fastify-production.up.railway.app/recipes/${id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok && result.errors !== null) {
-        throw new Error(Object.values(result.errors).flat().join('. ').trim());
-      }
-
-      return result;
-    },
+    mutationFn: updateRecipe,
   });
 
   const [mode, setMode] = useState('VIEW');
 
   const handleSubmit = (payload: RecipeFormSchema) => {
-    mutate(payload, {
-      onSuccess: (): void => {
-        alert('Recipe updated successfully!');
+    mutate(
+      { id, payload },
+      {
+        onSuccess: (): void => {
+          alert('Recipe updated successfully!');
+        },
+        onError: (error: Error): void => {
+          alert(Object.values(error).flat().join('. ').trim());
+        },
       },
-      onError: (error: Error): void => {
-        alert(Object.values(error).flat().join('. ').trim());
-      },
-    });
+    );
   };
 
   const handleClick = () => {
@@ -205,5 +190,5 @@ const RecipeDetails = (): React.JSX.Element => {
 };
 
 export const Route = createFileRoute('/recipes/$id')({
-  component: RecipeDetails,
+  component: Page,
 });
