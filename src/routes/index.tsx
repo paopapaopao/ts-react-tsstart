@@ -6,7 +6,7 @@ import type { Recipe } from '#/lib/types';
 import { Button } from '#/components/ui';
 import { RecipeCard } from '#/components';
 
-const Home = (): React.JSX.Element => {
+const Page = (): React.JSX.Element => {
   const { isLoading, isError, error, data } = useQuery({
     queryKey: ['recipes'],
     queryFn: async () => {
@@ -63,7 +63,7 @@ const Home = (): React.JSX.Element => {
                 <div className='p-4'>
                   <Link
                     to={`/recipes/$id`}
-                    params={{ id: recipe?.id.toString()! }}
+                    params={{ id: recipe?.id.toString() }}
                     className='text-xl font-semibold mb-2'
                   >
                     <RecipeCard.Name />
@@ -97,4 +97,4 @@ const Home = (): React.JSX.Element => {
   );
 };
 
-export const Route = createFileRoute('/')({ component: Home });
+export const Route = createFileRoute('/')({ component: Page });

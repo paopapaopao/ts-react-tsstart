@@ -2,12 +2,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { updateRecipe } from '#/lib/apis';
 import type { Recipe, RecipeFormSchema } from '#/lib/types';
 
 import { Button, FieldSeparator } from '#/components/ui';
 import { RecipeCard, RecipeForm } from '#/components';
 
-const RecipeDetails = (): React.JSX.Element => {
+const Page = (): React.JSX.Element => {
   const { id } = Route.useParams();
 
   const { isLoading, isError, error, data } = useQuery({
@@ -26,9 +27,7 @@ const RecipeDetails = (): React.JSX.Element => {
   const defaultValues: RecipeFormSchema = {
     image: data?.image ?? '',
     name: data?.name ?? '',
-    ingredient: '',
     ingredients: data?.ingredients ?? [],
-    instruction: '',
     instructions: data?.instructions ?? [],
 
     prepTime: Number(data?.prepTime),
@@ -37,9 +36,7 @@ const RecipeDetails = (): React.JSX.Element => {
     servings: Number(data?.servings),
     calories: Number(data?.calories),
     cuisine: data?.cuisine ?? '',
-    tag: '',
     tags: data?.tags ?? [],
-    mealType: '',
     mealTypes: (data?.mealType ?? []) as RecipeFormSchema['mealTypes'],
 
     userId: Number(data?.userId),
@@ -48,45 +45,32 @@ const RecipeDetails = (): React.JSX.Element => {
   };
 
   const { mutate } = useMutation({
-    mutationFn: async (payload: RecipeFormSchema) => {
-      const { ingredient, instruction, tag, mealTypes, ...filteredPayload } =
-        payload;
-
-      const response = await fetch(
-        `https://node-ts-fastify-production.up.railway.app/recipes/${id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...filteredPayload, mealType: mealTypes }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok && result.errors !== null) {
-        throw new Error(Object.values(result.errors).flat().join('. ').trim());
-      }
-
-      return result;
-    },
+    mutationFn: updateRecipe,
   });
 
   const [mode, setMode] = useState('VIEW');
 
   const handleSubmit = (payload: RecipeFormSchema) => {
-    mutate(payload, {
-      onSuccess: (): void => {
-        alert('Recipe updated successfully!');
+    mutate(
+      { id, payload },
+      {
+        onSuccess: (): void => {
+          alert('Recipe updated successfully!');
+        },
+        onError: (error: Error): void => {
+          alert(Object.values(error).flat().join('. ').trim());
+        },
       },
-      onError: (error: Error): void => {
-        alert(Object.values(error).flat().join('. ').trim());
-      },
-    });
+    );
+  };
+
+  const handleClick = () => {
+    setMode((mode) => (mode === 'VIEW' ? 'EDIT' : 'VIEW'));
   };
 
   if (isLoading) {
     return (
-      <main className='px-16 py-8 min-h-dvh flex justify-center items-center'>
+      <main className='justify-center items-center'>
         <h1 className='text-2xl font-bold text-yellow-400'>Loading...</h1>
       </main>
     );
@@ -94,7 +78,7 @@ const RecipeDetails = (): React.JSX.Element => {
 
   if (isError) {
     return (
-      <main className='px-16 py-8 min-h-dvh flex flex-col gap-2 justify-center items-center'>
+      <main className='flex-col gap-2 justify-center items-center'>
         <h1 className='text-2xl font-bold text-red-400'>Error</h1>
         <p>Error: {error?.message}</p>
       </main>
@@ -102,94 +86,109 @@ const RecipeDetails = (): React.JSX.Element => {
   }
 
   return (
-    <main className='px-16 py-8 flex flex-col gap-8 justify-center'>
-      <Button
-        onClick={() => {
-          setMode((prevMode) => (prevMode === 'VIEW' ? 'EDIT' : 'VIEW'));
-        }}
-        className='cursor-pointer'
+    <main className='justify-center'>
+      <div
+        className='flex flex-col gap-8'
+        style={{ width: 'clamp(500px, 50%, 1000px)' }}
       >
-        {mode === 'VIEW' ? 'Edit Recipe' : 'Cancel'}
-      </Button>
+        <Button onClick={handleClick}>
+          {mode === 'VIEW' ? 'Edit Recipe' : 'Cancel'}
+        </Button>
 
-      {mode === 'VIEW' ? (
-        <RecipeCard recipe={data}>
-          {/* <div className='grid gap-4'> */}
-          <div className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'>
-            <p className='justify-self-end leading-10 text-sm font-medium'>
-              Image
-            </p>
-            <RecipeCard.Image />
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Name
-            </p>
-            <RecipeCard.Name />
-            <p className='justify-self-end leading-10 text-sm font-medium'>
-              Ingredients
-            </p>
-            <RecipeCard.Ingredients />
-            <p className='justify-self-end leading-10 text-sm font-medium'>
-              Instructions
-            </p>
-            <RecipeCard.Instructions />
+        {mode === 'VIEW' ? (
+          <RecipeCard recipe={data}>
+            <div className='grid grid-cols-[max-content_1fr] gap-x-8 gap-y-4'>
+              <p className='justify-self-end leading-10 text-sm font-medium'>
+                Image
+              </p>
+              <RecipeCard.Image />
 
-            <FieldSeparator className='py-8 col-span-2' />
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Name
+              </p>
+              <RecipeCard.Name />
 
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Prep Time
-              <i> (mins)</i>
-            </p>
-            <RecipeCard.PrepTime />
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Cook Time
-              <i> (mins)</i>
-            </p>
-            <RecipeCard.CookTime />
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Difficulty
-            </p>
-            <RecipeCard.Difficulty />
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Servings
-            </p>
-            <RecipeCard.Servings />
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Calories
-              <i> (/serving)</i>
-            </p>
-            <RecipeCard.Calories />
-            <p className='justify-self-end leading-6 text-sm font-medium'>
-              Cuisine
-            </p>
-            <RecipeCard.Cuisine />
-            <p className='justify-self-end leading-8 text-sm font-medium'>
-              Tags
-            </p>
-            <RecipeCard.Tags />
-            <p className='justify-self-end leading-8 text-sm font-medium'>
-              Meal Types
-            </p>
-            <RecipeCard.MealTypes />
-          </div>
-        </RecipeCard>
-      ) : (
-        <RecipeForm
-          values={{
-            ...defaultValues,
-            difficulty: defaultValues.difficulty as
-              | ''
-              | 'Easy'
-              | 'Medium'
-              | 'Hard',
-          }}
-          onSubmit={handleSubmit}
-          label='Update Recipe'
-        />
-      )}
+              <p className='justify-self-end leading-10 text-sm font-medium'>
+                Ingredients
+              </p>
+              <RecipeCard.Ingredients />
+
+              <p className='justify-self-end leading-10 text-sm font-medium'>
+                Instructions
+              </p>
+              <RecipeCard.Instructions />
+
+              <FieldSeparator className='py-8 col-span-2' />
+
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Prep Time
+              </p>
+              <div className='flex items-center gap-4'>
+                <RecipeCard.PrepTime className='flex-1' />
+                <p>mins</p>
+              </div>
+
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Cook Time
+              </p>
+              <div className='flex items-center gap-4'>
+                <RecipeCard.CookTime className='flex-1' />
+                <p>mins</p>
+              </div>
+
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Difficulty
+              </p>
+              <RecipeCard.Difficulty />
+
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Servings
+              </p>
+              <RecipeCard.Servings />
+
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Calories
+              </p>
+              <div className='flex items-center gap-4'>
+                <RecipeCard.Calories className='flex-1' />
+                <p>/serving</p>
+              </div>
+
+              <p className='justify-self-end leading-6 text-sm font-medium'>
+                Cuisine
+              </p>
+              <RecipeCard.Cuisine />
+
+              <p className='justify-self-end leading-8 text-sm font-medium'>
+                Tags
+              </p>
+              <RecipeCard.Tags />
+
+              <p className='justify-self-end leading-8 text-sm font-medium'>
+                Meal Types
+              </p>
+              <RecipeCard.MealTypes />
+            </div>
+          </RecipeCard>
+        ) : (
+          <RecipeForm
+            label='Update Recipe'
+            values={{
+              ...defaultValues,
+              difficulty: defaultValues.difficulty as
+                | ''
+                | 'Easy'
+                | 'Medium'
+                | 'Hard',
+            }}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </div>
     </main>
   );
 };
 
 export const Route = createFileRoute('/recipes/$id')({
-  component: RecipeDetails,
+  component: Page,
 });

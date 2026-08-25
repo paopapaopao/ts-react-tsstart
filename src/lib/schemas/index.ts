@@ -17,12 +17,10 @@ import { DIFFICULTIES, MEAL_TYPES } from '#/lib/constants';
 export const recipeFormSchema = object({
   image: string(),
   name: pipe(string(), nonEmpty('Required')),
-  ingredient: string(),
   ingredients: pipe(
     array(string()),
     minLength(1, 'Must have a minimum of 1 entry'),
   ),
-  instruction: string(),
   instructions: pipe(
     array(string()),
     minLength(1, 'Must have a minimum of 1 entry'),
@@ -37,9 +35,7 @@ export const recipeFormSchema = object({
   servings: pipe(number(), minValue(0, 'Must be positive or 0')),
   calories: pipe(number(), minValue(0, 'Must be positive or 0')),
   cuisine: string(),
-  tag: string(),
   tags: array(string()),
-  mealType: string(),
   mealTypes: array(picklist(MEAL_TYPES, 'Must be an option from the list')),
 
   userId: number(),
