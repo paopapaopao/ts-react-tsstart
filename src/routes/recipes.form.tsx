@@ -25,7 +25,24 @@ const Page = (): React.JSX.Element => {
   return (
     <main className='justify-center'>
       <div style={{ width: 'clamp(500px, 50%, 1000px)' }}>
-        <RecipeForm label='Create Recipe' onSubmit={handleSubmit} />
+        <RecipeForm onSubmit={handleSubmit}>
+          <RecipeForm.NameField />
+          <RecipeForm.IngredientsField />
+          <RecipeForm.InstructionsField />
+
+          <RecipeForm.Separator className='py-8 col-span-2' />
+
+          <RecipeForm.PrepTimeField />
+          <RecipeForm.CookTimeField />
+          <RecipeForm.DifficultyField />
+          <RecipeForm.ServingsField />
+          <RecipeForm.CaloriesField />
+          <RecipeForm.CuisineField />
+          <RecipeForm.TagsField />
+          <RecipeForm.MealTypesField />
+
+          <RecipeForm.Submit label='Create Recipe' />
+        </RecipeForm>
       </div>
     </main>
   );
