@@ -1,4 +1,4 @@
-import { Badge, Button, Card, CardAction, CardHeader, CardTitle } from '../ui';
+import { Button, Card, CardAction, CardHeader, CardTitle } from '../ui';
 import { TagListField } from './TagListField';
 
 export const IngredientsField = () => (
@@ -41,26 +41,6 @@ export const InstructionsField = () => (
             </CardAction>
           </CardHeader>
         </Card>
-      </li>
-    )}
-  />
-);
-
-export const TagsField = () => (
-  <TagListField
-    name='tags'
-    label='Tags'
-    placeholder='Enter tags'
-    unique
-    itemsClassName='flex flex-wrap gap-2'
-    renderItem={(value, index, onRemove) => (
-      <li key={`${index}-${value}`}>
-        <Badge className='px-4 py-4'>
-          {value}
-          <span className='cursor-pointer' onClick={onRemove}>
-            X
-          </span>
-        </Badge>
       </li>
     )}
   />

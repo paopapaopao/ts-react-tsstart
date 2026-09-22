@@ -7,12 +7,7 @@ import { cn } from '#/lib/utils';
 import { FieldSeparator } from '../ui';
 import { RecipeFormContext } from './RecipeFormContext';
 import { MealTypesField } from './MealTypesField';
-import {
-  IngredientsField,
-  InstructionsField,
-  SubmitButton,
-  TagsField,
-} from './fields';
+import { IngredientsField, InstructionsField, SubmitButton } from './fields';
 import { Calories } from './Calories';
 import { CookTime } from './CookTime';
 import { Cuisine } from './Cuisine';
@@ -20,6 +15,7 @@ import { Difficulty } from './Difficulty';
 import { Name } from './Name';
 import { PrepTime } from './PrepTime';
 import { Servings } from './Servings';
+import { Tags } from './Tags';
 
 type Props = {
   className?: string;
@@ -100,7 +96,7 @@ RecipeForm.Difficulty = Difficulty;
 RecipeForm.Servings = Servings;
 RecipeForm.Calories = Calories;
 RecipeForm.Cuisine = Cuisine;
-RecipeForm.TagsField = TagsField; //
+RecipeForm.Tags = Tags;
 RecipeForm.MealTypesField = MealTypesField; //
 
 RecipeForm.Submit = SubmitButton; //

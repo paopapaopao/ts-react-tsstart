@@ -38,7 +38,7 @@ const Page = (): React.JSX.Element => {
           <RecipeForm.Servings />
           <RecipeForm.Calories />
           <RecipeForm.Cuisine />
-          <RecipeForm.TagsField />
+          <RecipeForm.Tags />
           <RecipeForm.MealTypesField />
 
           <RecipeForm.Submit label='Create Recipe' />
