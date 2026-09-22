@@ -23,7 +23,9 @@ export const handleKeyDown = ({
     if (value === '') return;
 
     onChange((previousValue) => {
-      if (previousValue.includes(value) && isUnique) return previousValue;
+      if (previousValue.includes(value) && isUnique) {
+        return previousValue;
+      }
 
       return [...previousValue, value];
     });
@@ -49,6 +51,18 @@ export const handleValueChange = <T>(onChange: (value: T) => void) => {
     if (value === null) return;
 
     onChange(value);
+  };
+};
+
+export const handleClick = ({
+  index,
+  onChange,
+}: {
+  index: number;
+  onChange: (updater: Updater<string[]>) => void;
+}) => {
+  return () => {
+    onChange((value) => value.filter((_, i) => i !== index));
   };
 };
 
