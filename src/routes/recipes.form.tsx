@@ -34,7 +34,7 @@ const Page = (): React.JSX.Element => {
 
           <RecipeForm.PrepTime />
           <RecipeForm.CookTime />
-          <RecipeForm.DifficultyField />
+          <RecipeForm.Difficulty />
           <RecipeForm.Servings />
           <RecipeForm.Calories />
           <RecipeForm.Cuisine />
