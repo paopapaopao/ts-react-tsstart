@@ -6,12 +6,13 @@ import { cn } from '#/lib/utils';
 
 import { FieldSeparator } from '../ui';
 import { RecipeFormContext } from './RecipeFormContext';
-import { InstructionsField, SubmitButton } from './fields';
+import { SubmitButton } from './fields';
 import { Calories } from './Calories';
 import { CookTime } from './CookTime';
 import { Cuisine } from './Cuisine';
 import { Difficulty } from './Difficulty';
 import { Ingredients } from './Ingredients';
+import { Instructions } from './Instructions';
 import { MealTypes } from './MealTypes';
 import { Name } from './Name';
 import { PrepTime } from './PrepTime';
@@ -89,7 +90,7 @@ export const RecipeForm = ({
 
 RecipeForm.Name = Name;
 RecipeForm.Ingredients = Ingredients;
-RecipeForm.InstructionsField = InstructionsField; //
+RecipeForm.Instructions = Instructions;
 
 RecipeForm.PrepTime = PrepTime;
 RecipeForm.CookTime = CookTime;
