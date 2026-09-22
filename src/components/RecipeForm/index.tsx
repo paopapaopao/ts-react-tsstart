@@ -9,17 +9,17 @@ import { RecipeFormContext } from './RecipeFormContext';
 import { DifficultyField } from './DifficultyField';
 import { MealTypesField } from './MealTypesField';
 import {
-  CaloriesField,
-  CookTimeField,
-  CuisineField,
   IngredientsField,
   InstructionsField,
-  NameField,
-  PrepTimeField,
-  ServingsField,
   SubmitButton,
   TagsField,
 } from './fields';
+import { Calories } from './Calories';
+import { CookTime } from './CookTime';
+import { Cuisine } from './Cuisine';
+import { Name } from './Name';
+import { PrepTime } from './PrepTime';
+import { Servings } from './Servings';
 
 type Props = {
   className?: string;
@@ -90,16 +90,18 @@ export const RecipeForm = ({
   );
 };
 
-RecipeForm.NameField = NameField;
-RecipeForm.IngredientsField = IngredientsField;
-RecipeForm.InstructionsField = InstructionsField;
-RecipeForm.Separator = FieldSeparator;
-RecipeForm.PrepTimeField = PrepTimeField;
-RecipeForm.CookTimeField = CookTimeField;
-RecipeForm.DifficultyField = DifficultyField;
-RecipeForm.ServingsField = ServingsField;
-RecipeForm.CaloriesField = CaloriesField;
-RecipeForm.CuisineField = CuisineField;
-RecipeForm.TagsField = TagsField;
-RecipeForm.MealTypesField = MealTypesField;
-RecipeForm.Submit = SubmitButton;
+RecipeForm.Name = Name;
+RecipeForm.IngredientsField = IngredientsField; //
+RecipeForm.InstructionsField = InstructionsField; //
+
+RecipeForm.PrepTime = PrepTime;
+RecipeForm.CookTime = CookTime;
+RecipeForm.DifficultyField = DifficultyField; //
+RecipeForm.Servings = Servings;
+RecipeForm.Calories = Calories;
+RecipeForm.Cuisine = Cuisine;
+RecipeForm.TagsField = TagsField; //
+RecipeForm.MealTypesField = MealTypesField; //
+
+RecipeForm.Submit = SubmitButton; //
+RecipeForm.Separator = FieldSeparator; //

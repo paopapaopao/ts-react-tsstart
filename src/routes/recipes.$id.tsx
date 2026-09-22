@@ -182,18 +182,18 @@ const Page = (): React.JSX.Element => {
                 | 'Hard',
             }}
           >
-            <RecipeForm.NameField />
+            <RecipeForm.Name />
             <RecipeForm.IngredientsField />
             <RecipeForm.InstructionsField />
 
             <RecipeForm.Separator className='py-8 col-span-2' />
 
-            <RecipeForm.PrepTimeField />
-            <RecipeForm.CookTimeField />
+            <RecipeForm.PrepTime />
+            <RecipeForm.CookTime />
             <RecipeForm.DifficultyField />
-            <RecipeForm.ServingsField />
-            <RecipeForm.CaloriesField />
-            <RecipeForm.CuisineField />
+            <RecipeForm.Servings />
+            <RecipeForm.Calories />
+            <RecipeForm.Cuisine />
             <RecipeForm.TagsField />
             <RecipeForm.MealTypesField />
 

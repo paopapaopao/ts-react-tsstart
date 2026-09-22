@@ -1,46 +1,5 @@
 import { Badge, Button, Card, CardAction, CardHeader, CardTitle } from '../ui';
-import { TextField } from './TextField';
-import { NumberField } from './NumberField';
 import { TagListField } from './TagListField';
-
-export const NameField = () => (
-  <TextField name='name' label='Name' placeholder='Enter name' />
-);
-
-export const CuisineField = () => (
-  <TextField name='cuisine' label='Cuisine' placeholder='Enter cuisine' />
-);
-
-export const PrepTimeField = () => (
-  <NumberField
-    name='prepTime'
-    label='Prep Time'
-    placeholder='Enter preparation time'
-    suffix='mins'
-  />
-);
-
-export const CookTimeField = () => (
-  <NumberField
-    name='cookTime'
-    label='Cook Time'
-    placeholder='Enter cook time'
-    suffix='mins'
-  />
-);
-
-export const ServingsField = () => (
-  <NumberField name='servings' label='Servings' placeholder='Enter servings' />
-);
-
-export const CaloriesField = () => (
-  <NumberField
-    name='calories'
-    label='Calories'
-    placeholder='Enter calories'
-    suffix='/serving'
-  />
-);
 
 export const IngredientsField = () => (
   <TagListField
