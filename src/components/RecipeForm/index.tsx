@@ -4,9 +4,7 @@ import { recipeFormSchema } from '#/lib/schemas';
 import type { RecipeFormSchema } from '#/lib/types';
 import { cn } from '#/lib/utils';
 
-import { FieldSeparator } from '../ui';
 import { RecipeFormContext } from './RecipeFormContext';
-import { SubmitButton } from './fields';
 import { Calories } from './Calories';
 import { CookTime } from './CookTime';
 import { Cuisine } from './Cuisine';
@@ -17,6 +15,7 @@ import { MealTypes } from './MealTypes';
 import { Name } from './Name';
 import { PrepTime } from './PrepTime';
 import { Servings } from './Servings';
+import { Submit } from './Submit';
 import { Tags } from './Tags';
 
 type Props = {
@@ -101,5 +100,4 @@ RecipeForm.Cuisine = Cuisine;
 RecipeForm.Tags = Tags;
 RecipeForm.MealTypes = MealTypes;
 
-RecipeForm.Submit = SubmitButton; //
-RecipeForm.Separator = FieldSeparator; //
+RecipeForm.Submit = Submit;

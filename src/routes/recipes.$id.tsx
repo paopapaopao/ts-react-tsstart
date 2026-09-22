@@ -186,7 +186,7 @@ const Page = (): React.JSX.Element => {
             <RecipeForm.Ingredients />
             <RecipeForm.Instructions />
 
-            <RecipeForm.Separator className='py-8 col-span-2' />
+            <FieldSeparator className='py-8 col-span-2' />
 
             <RecipeForm.PrepTime />
             <RecipeForm.CookTime />

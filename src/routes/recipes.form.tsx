@@ -5,6 +5,7 @@ import { createRecipe } from '#/lib/apis';
 import type { RecipeFormSchema } from '#/lib/types';
 
 import { RecipeForm } from '#/components';
+import { FieldSeparator } from '#/components/ui';
 
 const Page = (): React.JSX.Element => {
   const { mutate } = useMutation({
@@ -30,7 +31,7 @@ const Page = (): React.JSX.Element => {
           <RecipeForm.Ingredients />
           <RecipeForm.Instructions />
 
-          <RecipeForm.Separator className='py-8 col-span-2' />
+          <FieldSeparator className='py-8 col-span-2' />
 
           <RecipeForm.PrepTime />
           <RecipeForm.CookTime />
