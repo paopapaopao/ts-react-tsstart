@@ -183,7 +183,7 @@ const Page = (): React.JSX.Element => {
             }}
           >
             <RecipeForm.Name />
-            <RecipeForm.IngredientsField />
+            <RecipeForm.Ingredients />
             <RecipeForm.InstructionsField />
 
             <RecipeForm.Separator className='py-8 col-span-2' />

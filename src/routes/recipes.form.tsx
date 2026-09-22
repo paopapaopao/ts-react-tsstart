@@ -27,7 +27,7 @@ const Page = (): React.JSX.Element => {
       <div style={{ width: 'clamp(500px, 50%, 1000px)' }}>
         <RecipeForm onSubmit={handleSubmit}>
           <RecipeForm.Name />
-          <RecipeForm.IngredientsField />
+          <RecipeForm.Ingredients />
           <RecipeForm.InstructionsField />
 
           <RecipeForm.Separator className='py-8 col-span-2' />

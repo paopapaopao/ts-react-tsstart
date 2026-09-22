@@ -1,29 +1,6 @@
 import { Button, Card, CardAction, CardHeader, CardTitle } from '../ui';
 import { TagListField } from './TagListField';
 
-export const IngredientsField = () => (
-  <TagListField
-    name='ingredients'
-    label='Ingredients'
-    placeholder='Enter ingredients'
-    unique
-    renderItem={(value, index, onRemove) => (
-      <li key={`${index}-${value}`}>
-        <Card className='py-0'>
-          <CardHeader className='flex items-center'>
-            <CardTitle className='flex-1'>{value}</CardTitle>
-            <CardAction>
-              <Button variant='link' onClick={onRemove}>
-                X
-              </Button>
-            </CardAction>
-          </CardHeader>
-        </Card>
-      </li>
-    )}
-  />
-);
-
 export const InstructionsField = () => (
   <TagListField
     name='instructions'
