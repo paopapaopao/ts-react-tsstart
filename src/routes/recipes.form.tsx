@@ -5,6 +5,7 @@ import { createRecipe } from '#/lib/apis';
 import type { RecipeFormSchema } from '#/lib/types';
 
 import { RecipeForm } from '#/components';
+import { FieldSeparator } from '#/components/ui';
 
 const Page = (): React.JSX.Element => {
   const { mutate } = useMutation({
@@ -25,7 +26,24 @@ const Page = (): React.JSX.Element => {
   return (
     <main className='justify-center'>
       <div style={{ width: 'clamp(500px, 50%, 1000px)' }}>
-        <RecipeForm label='Create Recipe' onSubmit={handleSubmit} />
+        <RecipeForm onSubmit={handleSubmit}>
+          <RecipeForm.Name />
+          <RecipeForm.Ingredients />
+          <RecipeForm.Instructions />
+
+          <FieldSeparator className='py-8 col-span-2' />
+
+          <RecipeForm.PrepTime />
+          <RecipeForm.CookTime />
+          <RecipeForm.Difficulty />
+          <RecipeForm.Servings />
+          <RecipeForm.Calories />
+          <RecipeForm.Cuisine />
+          <RecipeForm.Tags />
+          <RecipeForm.MealTypes />
+
+          <RecipeForm.Submit label='Create Recipe' />
+        </RecipeForm>
       </div>
     </main>
   );

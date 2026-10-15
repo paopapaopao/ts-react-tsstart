@@ -172,7 +172,7 @@ const Page = (): React.JSX.Element => {
           </RecipeCard>
         ) : (
           <RecipeForm
-            label='Update Recipe'
+            onSubmit={handleSubmit}
             values={{
               ...defaultValues,
               difficulty: defaultValues.difficulty as
@@ -181,8 +181,24 @@ const Page = (): React.JSX.Element => {
                 | 'Medium'
                 | 'Hard',
             }}
-            onSubmit={handleSubmit}
-          />
+          >
+            <RecipeForm.Name />
+            <RecipeForm.Ingredients />
+            <RecipeForm.Instructions />
+
+            <FieldSeparator className='py-8 col-span-2' />
+
+            <RecipeForm.PrepTime />
+            <RecipeForm.CookTime />
+            <RecipeForm.Difficulty />
+            <RecipeForm.Servings />
+            <RecipeForm.Calories />
+            <RecipeForm.Cuisine />
+            <RecipeForm.Tags />
+            <RecipeForm.MealTypes />
+
+            <RecipeForm.Submit label='Update Recipe' />
+          </RecipeForm>
         )}
       </div>
     </main>
