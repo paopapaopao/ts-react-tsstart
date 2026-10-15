@@ -19,10 +19,10 @@ import { Submit } from './Submit';
 import { Tags } from './Tags';
 
 type Props = {
+  children: React.ReactNode;
   className?: string;
   values?: RecipeFormSchema;
   onSubmit?: (payload: RecipeFormSchema) => void | Promise<void>;
-  children: React.ReactNode;
 };
 
 const defaultValues: RecipeFormSchema = {
@@ -45,11 +45,17 @@ const defaultValues: RecipeFormSchema = {
   rating: 0,
 };
 
+/**
+ * TODO
+ *  - Add on focus styles (yellow)
+ *  - Set combobox and input:number icons to cursor pointer
+ */
+
 export const RecipeForm = ({
+  children,
   className = '',
   values = defaultValues,
   onSubmit = () => {},
-  children,
 }: Props): React.JSX.Element => {
   const form = useForm({
     defaultValues: values,
@@ -57,7 +63,7 @@ export const RecipeForm = ({
       onBlur: recipeFormSchema,
       onSubmit: recipeFormSchema,
     },
-    onSubmit: ({ value }) => {
+    onSubmit: ({ value }: { value: RecipeFormSchema }) => {
       onSubmit(value);
     },
   });
@@ -72,13 +78,15 @@ export const RecipeForm = ({
       <form
         className={formClassName}
         action=''
-        onSubmit={(event) => {
-          event.preventDefault();
-          form.handleSubmit();
-        }}
-        onKeyDown={(event) => {
+        onKeyDown={(event: React.KeyboardEvent<HTMLFormElement>) => {
           if (event.key !== 'Enter') return;
+
           event.preventDefault();
+        }}
+        onSubmit={(event: React.SubmitEvent<HTMLFormElement>) => {
+          event.preventDefault();
+
+          form.handleSubmit();
         }}
       >
         {children}

@@ -1,9 +1,9 @@
 import { Field, FieldError, FieldLabel, Input } from '../ui';
 import { handleInputChange, inputClassNames, isInvalid } from './helpers';
-import { useRecipeFormContext } from './RecipeFormContext';
+import { useRecipeForm } from './useRecipeForm';
 
-export const CookTime = () => {
-  const { form } = useRecipeFormContext();
+export const CookTime = (): React.JSX.Element => {
+  const { form } = useRecipeForm();
 
   return (
     <form.Field name='cookTime'>

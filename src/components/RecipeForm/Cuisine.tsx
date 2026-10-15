@@ -1,9 +1,9 @@
 import { Field, FieldError, FieldLabel, Input } from '../ui';
 import { handleInputChange, inputClassNames, isInvalid } from './helpers';
-import { useRecipeFormContext } from './RecipeFormContext';
+import { useRecipeForm } from './useRecipeForm';
 
-export const Cuisine = () => {
-  const { form } = useRecipeFormContext();
+export const Cuisine = (): React.JSX.Element => {
+  const { form } = useRecipeForm();
 
   return (
     <form.Field name='cuisine'>
@@ -24,7 +24,7 @@ export const Cuisine = () => {
               value={state.value}
               onChange={handleInputChange({
                 onChange: handleChange,
-                parse: (value) => value,
+                parse: (value: string) => value,
               })}
               onBlur={handleBlur}
             />

@@ -8,11 +8,11 @@ import {
   inputClassNames,
   isInvalid,
 } from './helpers';
-import { useRecipeFormContext } from './RecipeFormContext';
+import { useRecipeForm } from './useRecipeForm';
 
-export const Tags = () => {
+export const Tags = (): React.JSX.Element => {
+  const { form } = useRecipeForm();
   const [tag, setTag] = useState('');
-  const { form } = useRecipeFormContext();
 
   return (
     <form.Field name='tags'>
@@ -38,13 +38,13 @@ export const Tags = () => {
               })}
               onChange={handleInputChange({
                 onChange: setTag,
-                parse: (value) => value,
+                parse: (value: string) => value,
               })}
               onBlur={handleBlur}
             />
             {state.value.length > 0 && (
               <ul className='flex flex-wrap gap-2'>
-                {state.value.map((tag, index) => (
+                {state.value.map((tag: string, index: number) => (
                   <li key={`${index}-${tag}`}>
                     <Badge className='px-4 py-4'>
                       {tag}

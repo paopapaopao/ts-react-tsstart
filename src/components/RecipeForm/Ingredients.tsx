@@ -18,11 +18,11 @@ import {
   inputClassNames,
   isInvalid,
 } from './helpers';
-import { useRecipeFormContext } from './RecipeFormContext';
+import { useRecipeForm } from './useRecipeForm';
 
-export const Ingredients = () => {
+export const Ingredients = (): React.JSX.Element => {
+  const { form } = useRecipeForm();
   const [ingredient, setIngredient] = useState('');
-  const { form } = useRecipeFormContext();
 
   return (
     <form.Field name='ingredients'>
@@ -48,13 +48,13 @@ export const Ingredients = () => {
               })}
               onChange={handleInputChange({
                 onChange: setIngredient,
-                parse: (value) => value,
+                parse: (value: string) => value,
               })}
               onBlur={handleBlur}
             />
             {state.value.length > 0 && (
               <ul className='flex flex-col gap-2'>
-                {state.value.map((ingredient, index) => (
+                {state.value.map((ingredient: string, index: number) => (
                   <li key={`${index}-${ingredient}`}>
                     <Card className='py-0'>
                       <CardHeader className='flex items-center'>

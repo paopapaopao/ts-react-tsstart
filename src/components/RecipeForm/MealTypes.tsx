@@ -15,10 +15,10 @@ import {
   FieldLabel,
 } from '../ui';
 import { handleValueChange, inputClassNames, isInvalid } from './helpers';
-import { useRecipeFormContext } from './RecipeFormContext';
+import { useRecipeForm } from './useRecipeForm';
 
-export const MealTypes = () => {
-  const { form } = useRecipeFormContext();
+export const MealTypes = (): React.JSX.Element => {
+  const { form } = useRecipeForm();
 
   return (
     <form.Field name='mealTypes'>
